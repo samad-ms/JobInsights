@@ -4,7 +4,7 @@ from response_generator import model
 from preprocess import find_valid_description
 from download_csv import get_table_download_link
 from response_generator import set_initial_message
-
+from response_generator import chat_with_gemini
 
 
 
@@ -136,13 +136,59 @@ def extraction_tab():
 
     st.dataframe(st.session_state.df)
 
+#----------------------------------------------------------------------------------------
 if 'messages' not in st.session_state.keys():
     st.session_state.messages = [{'role':'assistant', 'content':'How may I help you?'}]
 
-#----------------------------------------------------------------------------------------
-# def chat_tab():
-#     """Chat Interface"""
-#     st.title("Converse with AI.")
+
+def chat_tab():
+    """Chat Interface"""
+    st.title("Converse with AI.")
+
+    with st.expander("💡 Tips"):
+        st.write(
+        """
+        
+        * Clear prompts lead to better results.
+        * Stay on topic to avoid distracting the model from the main subject.
+
+        """
+        )
+
+    with st.expander("💡 Example Prompts"):
+        try:
+            st.write(
+                f"""
+                    * Identify the top 10 skills mentioned across all job descriptions.
+                    * What are the most common experience levels required for jobs?
+                    * What are the emerging job trends based on recent job descriptions?
+                    * Which locations have the highest demand for this position?
+                    * Can you summarize the primary responsibilities mentioned in job descriptions?
+                    * Can you identify any patterns related to remote work or flexible schedules in the job descriptions?
+                    * Do job descriptions from different regions emphasize different aspects? If so, what are they?
+                    * What soft skills are frequently mentioned in job postings?
+                    * Provide top resources for mastering various technologies to become proficient in {st.session_state.search_term} within a 3 to 4 month timeframe, along with a comprehensive study plan.
+                """
+            )
+        except:
+            pass
+        
+
+    for message in st.session_state.messages:
+        with st.chat_message(message['role']):
+            st.write(message['content'])
+
+    if prompt := st.chat_input("Eg: Can you summarize the key insights from the job descriptions?"):
+        st.session_state.messages.append({'role':'user', 'content':prompt})
+        with st.chat_message('user'):
+            st.write(prompt)
+
+    if st.session_state.messages[-1]['role'] != 'assistant':
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking ... "):
+                response = st.write_stream(chat_with_gemini(prompt))
+        message = {'role':'assistant', 'content':response}
+        st.session_state.messages.append(message)
 
 #----------------------------------------------------------------------------------------                    
 
