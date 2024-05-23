@@ -1,4 +1,12 @@
 import streamlit as st
+from generate_df import generate_dataframe
+from response_generator import model
+from preprocess import find_valid_description
+from download_csv import get_table_download_link
+from response_generator import set_initial_message
+
+
+
 
 #----------------------------------------------------------------------------------------
 def home_tab():
@@ -90,6 +98,53 @@ def extraction_tab():
         
         st.session_state.messages = [{'role':'assistant', 'content':'How may I help you?'}]
 
+        with st.status("Extracting Data ... Please Wait", expanded=True):  
+            try:
+                # Generate the dataframe from details
+                st.write("Generating DataFrame ...")
+                df = generate_dataframe(site_name, search_term, location, results_wanted, country)
+                st.session_state.df = df  # Add to the session_state
+                # st.write(df)#---------------------------------------
+                # Description String combines all the description generated for the model to summarize   
+                total_desc_count = 30
+                desc_string = ""
+                st.write("Validating Descriptions ...")
+                desc_string = find_valid_description(df, total_desc_count, model)
+                # st.write(desc_string)#---------------------------------------
+                if desc_string:
+                    st.session_state.desc_string = desc_string
+                else:
+                    st.error("No valid description found.")            
+                st.success("Data Extraction Complete!")
+            except Exception as e:
+                st.error(f"Sorry, there is a problem: {e}")
+        
+        # Passing the initial System Message
+        with st.status("Fetching Descriptions ... Please Wait", expanded = True):
+            st.write("Setting Descriptions ... This will take a few moments.")
+            try:
+                set_initial_message(st.session_state.desc_string) #context set
+                st.success("Descriptions Set Successfully!")
+            except Exception as e:
+                st.error(f"Sorry, there is a problem: {e}")
+
+        with st.spinner("Generating download link ..."):
+            try:
+                st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+            except:
+                pass
+
+    st.dataframe(st.session_state.df)
+
+if 'messages' not in st.session_state.keys():
+    st.session_state.messages = [{'role':'assistant', 'content':'How may I help you?'}]
+
+#----------------------------------------------------------------------------------------
+# def chat_tab():
+#     """Chat Interface"""
+#     st.title("Converse with AI.")
+
+#----------------------------------------------------------------------------------------                    
 
 if __name__ == "__main__":
     st.set_page_config(page_title="JobInsights - AI-driven job seeker")
