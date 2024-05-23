@@ -1,0 +1,2 @@
+streamlit
+scrape_jobs
