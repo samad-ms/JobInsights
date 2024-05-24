@@ -6,7 +6,7 @@ import json
 # from json_retrieval_prompt import retrieve_prompt
 import os
 
-genai.configure(api_key = st.secrets['API_KEY'])
+genai.configure(api_key = st.secrets['GEMINI_API_KEY'])
 model = genai.GenerativeModel('gemini-1.0-pro')
 chat = model.start_chat(history = [])
 

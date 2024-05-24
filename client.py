@@ -145,54 +145,54 @@ if 'messages' not in st.session_state.keys():
     st.session_state.messages = [{'role':'assistant', 'content':'How may I help you?'}]
 #----------------------------------------------------------------------------------------
 
-def chat_tab():
-    """Chat Interface"""
-    st.title("Converse with AI.")
+# def chat_tab():
+#     """Chat Interface"""
+#     st.title("Converse with AI.")
 
-    with st.expander("💡 Tips"):
-        st.write(
-        """
-        * Ensure to extract the data at least once before engaging in a conversation with the AI to obtain real-time trends and context.
-        * Clear prompts lead to better results.
-        * Stay on topic to avoid distracting the model from the main subject.
+#     with st.expander("💡 Tips"):
+#         st.write(
+#         """
+#         * Ensure to extract the data at least once before engaging in a conversation with the AI to obtain real-time trends and context.
+#         * Clear prompts lead to better results.
+#         * Stay on topic to avoid distracting the model from the main subject.
 
-        """
-        )
+#         """
+#         )
 
-    with st.expander("💡 Example Prompts"):
-        try:
-            st.write(
-                f"""
-                    * Identify the top 10 skills mentioned across all job descriptions.
-                    * What are the most common experience levels required for jobs?
-                    * What are the emerging job trends based on recent job descriptions?
-                    * Which locations have the highest demand for this position?
-                    * Can you summarize the primary responsibilities mentioned in job descriptions?
-                    * Can you identify any patterns related to remote work or flexible schedules in the job descriptions?
-                    * Do job descriptions from different regions emphasize different aspects? If so, what are they?
-                    * What soft skills are frequently mentioned in job postings?
-                    * Provide top resources for mastering various technologies to become proficient in {st.session_state.search_term} within a 3 to 4 month timeframe, along with a comprehensive study plan.
-                """
-            )
-        except:
-            pass
+#     with st.expander("💡 Example Prompts"):
+#         try:
+#             st.write(
+#                 f"""
+#                     * Identify the top 10 skills mentioned across all job descriptions.
+#                     * What are the most common experience levels required for jobs?
+#                     * What are the emerging job trends based on recent job descriptions?
+#                     * Which locations have the highest demand for this position?
+#                     * Can you summarize the primary responsibilities mentioned in job descriptions?
+#                     * Can you identify any patterns related to remote work or flexible schedules in the job descriptions?
+#                     * Do job descriptions from different regions emphasize different aspects? If so, what are they?
+#                     * What soft skills are frequently mentioned in job postings?
+#                     * Provide top resources for mastering various technologies to become proficient in {st.session_state.search_term} within a 3 to 4 month timeframe, along with a comprehensive study plan.
+#                 """
+#             )
+#         except:
+#             pass
         
 
-    for message in st.session_state.messages:
-        with st.chat_message(message['role']):
-            st.write(message['content'])
+#     for message in st.session_state.messages:
+#         with st.chat_message(message['role']):
+#             st.write(message['content'])
 
-    if prompt := st.chat_input("Eg: Can you summarize the key insights from the job descriptions?"):
-        st.session_state.messages.append({'role':'user', 'content':prompt})
-        with st.chat_message('user'):
-            st.write(prompt)
+#     if prompt := st.chat_input("Eg: Can you summarize the key insights from the job descriptions?"):
+#         st.session_state.messages.append({'role':'user', 'content':prompt})
+#         with st.chat_message('user'):
+#             st.write(prompt)
 
-    if st.session_state.messages[-1]['role'] != 'assistant':
-        with st.chat_message("assistant"):
-            with st.spinner("Thinking ... "):
-                response = st.write_stream(chat_with_gemini(prompt))
-        message = {'role':'assistant', 'content':response}
-        st.session_state.messages.append(message)
+#     if st.session_state.messages[-1]['role'] != 'assistant':
+#         with st.chat_message("assistant"):
+#             with st.spinner("Thinking ... "):
+#                 response = st.write_stream(chat_with_gemini(prompt))
+#         message = {'role':'assistant', 'content':response}
+#         st.session_state.messages.append(message)
 
 #----------------------------------------------------------------------------------------                    
 def chat_tab_for_gpt():
@@ -243,7 +243,7 @@ def chat_tab_for_gpt():
                 response = st.write(retrive_data_and_respose(db=st.session_state['db'],input=prompt))
         message = {'role':'assistant', 'content':response}
         st.session_state.messages.append(message)
-
+        
 #----------------------------------------------------------------------------------------
 if __name__ == "__main__":
     st.set_page_config(page_title="JobInsights - AI-driven job seeker")
