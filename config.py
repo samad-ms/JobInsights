@@ -13,11 +13,18 @@ def generate_streamlit_folder():
         return
 
     # Ask user for API key
-    api_key = input("Enter your API key: ").strip()
-
+    GEMINI_API_KEY = input("Enter your GEMINI_API_KEY: ").strip()
+    OPENAI_API_KEY = input("Enter your OPENAI_API_KEY: ").strip()
+    LANGCHAIN_API_KEY = input("Enter your LANGCHAIN_API_KEY: ").strip()
+    LANGCHAIN_TRACING_V2="true"
+    LANGCHAIN_PROJECT="JobInsights"
     # Write API key to secrets.toml
     with open(secrets_file, "w") as f:
-        f.write(f"API_KEY=\"{api_key}\"\n")
+        f.write(f"GEMINI_API_KEY=\"{GEMINI_API_KEY}\"\n")
+        f.write(f"OPENAI_API_KEY=\"{OPENAI_API_KEY}\"\n")
+        f.write(f"LANGCHAIN_API_KEY=\"{LANGCHAIN_API_KEY}\"\n")
+        f.write(f"LANGCHAIN_TRACING_V2=\"'true'\"\n")
+        f.write(f"LANGCHAIN_PROJECT=\"'JobInsights'\"\n")
 
     print("API key has been saved to secrets.toml.")
 
