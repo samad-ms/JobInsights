@@ -11,6 +11,7 @@ def find_valid_description(df, total_desc_count, model):
             return desc_string
     return None 
 
+# extracting job discription from df
 def generate_description_string(df, slice_number, full=False):
     if not full:
         return '\n'.join('{}. {}'.format(i + 1, desc.replace("\n", " ")) for i, desc in enumerate(df['description'][:slice_number], start=0))

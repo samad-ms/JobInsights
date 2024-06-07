@@ -1,11 +1,12 @@
 import streamlit as st
+from langchain_core.messages import AIMessage, HumanMessage
 from generate_df import generate_dataframe
 from response_generator import model
 from preprocess import find_valid_description
 from download_csv import get_table_download_link
 from response_generator import set_initial_message
 from response_generator import chat_with_gemini
-from retriver import jd_to_vectorestore,retrive_data_and_respose
+from retriver import jd_to_vectorestore,get_response
 
 
 #----------------------------------------------------------------------------------------
@@ -127,7 +128,7 @@ def extraction_tab():
                 set_initial_message(st.session_state.desc_string) #context set for gemini
                 db=jd_to_vectorestore(st.session_state.desc_string)  #context set for gpt-rag
                 # st.write(db)#------------------------------------------------------
-                if db:
+                if 'db' not in st.session_state:
                     st.session_state.db = db
                 st.success("Descriptions Set Successfully!")
             except Exception as e:
@@ -139,65 +140,16 @@ def extraction_tab():
             except:
                 pass
 
-    st.dataframe(st.session_state.df)
+    if st.session_state.df is not None:
+        st.dataframe(st.session_state.df)
 
 if 'messages' not in st.session_state.keys():
     st.session_state.messages = [{'role':'assistant', 'content':'How may I help you?'}]
 #----------------------------------------------------------------------------------------
 
-# def chat_tab():
-#     """Chat Interface"""
-#     st.title("Converse with AI.")
-
-#     with st.expander("💡 Tips"):
-#         st.write(
-#         """
-#         * Ensure to extract the data at least once before engaging in a conversation with the AI to obtain real-time trends and context.
-#         * Clear prompts lead to better results.
-#         * Stay on topic to avoid distracting the model from the main subject.
-
-#         """
-#         )
-
-#     with st.expander("💡 Example Prompts"):
-#         try:
-#             st.write(
-#                 f"""
-#                     * Identify the top 10 skills mentioned across all job descriptions.
-#                     * What are the most common experience levels required for jobs?
-#                     * What are the emerging job trends based on recent job descriptions?
-#                     * Which locations have the highest demand for this position?
-#                     * Can you summarize the primary responsibilities mentioned in job descriptions?
-#                     * Can you identify any patterns related to remote work or flexible schedules in the job descriptions?
-#                     * Do job descriptions from different regions emphasize different aspects? If so, what are they?
-#                     * What soft skills are frequently mentioned in job postings?
-#                     * Provide top resources for mastering various technologies to become proficient in {st.session_state.search_term} within a 3 to 4 month timeframe, along with a comprehensive study plan.
-#                 """
-#             )
-#         except:
-#             pass
-        
-
-#     for message in st.session_state.messages:
-#         with st.chat_message(message['role']):
-#             st.write(message['content'])
-
-#     if prompt := st.chat_input("Eg: Can you summarize the key insights from the job descriptions?"):
-#         st.session_state.messages.append({'role':'user', 'content':prompt})
-#         with st.chat_message('user'):
-#             st.write(prompt)
-
-#     if st.session_state.messages[-1]['role'] != 'assistant':
-#         with st.chat_message("assistant"):
-#             with st.spinner("Thinking ... "):
-#                 response = st.write_stream(chat_with_gemini(prompt))
-#         message = {'role':'assistant', 'content':response}
-#         st.session_state.messages.append(message)
-
-#----------------------------------------------------------------------------------------                    
-def chat_tab_for_gpt():
+def chat_tab():
     """Chat Interface"""
-    st.title("Converse with RAG System.")
+    st.title("Conversation with AI.")
 
     with st.expander("💡 Tips"):
         st.write(
@@ -228,30 +180,84 @@ def chat_tab_for_gpt():
             pass
         
 
-    for message in st.session_state.messages:
-        with st.chat_message(message['role']):
-            st.write(message['content'])
 
     if prompt := st.chat_input("Eg: Can you summarize the key insights from the job descriptions?"):
         st.session_state.messages.append({'role':'user', 'content':prompt})
-        with st.chat_message('user'):
-            st.write(prompt)
+        response = chat_with_gemini(prompt)
+        st.session_state.messages.append({'role':'assistant', 'content':response})
 
-    if st.session_state.messages[-1]['role'] != 'assistant':
-        with st.chat_message("assistant"):
-            with st.spinner("Thinking ... "):
-                response = st.write(retrive_data_and_respose(db=st.session_state['db'],input=prompt))
-        message = {'role':'assistant', 'content':response}
-        st.session_state.messages.append(message)
+
+    for message in st.session_state.messages:
+        if message['role']=='user':
+            with st.chat_message('user'):
+                    st.write(message['content'])
+        if message['role']=='assistant':
+            with st.chat_message('assistant'):
+                with st.spinner("Thinking ... "):
+                    st.write(message['content'])
+
+#----------------------------------------------------------------------------------------                    
+def chat_tab_for_gpt():
+    """Chat Interface"""
+    st.title("Converse with RAG System.")
+    if 'db' in st.session_state:    
+        with st.expander("💡 Tips"):
+            st.write(
+            """
+            * Ensure to extract the data at least once before engaging in a conversation with the AI to obtain real-time trends and context.
+            * Clear prompts lead to better results.
+            * Stay on topic to avoid distracting the model from the main subject.
+
+            """
+            )
+
+        with st.expander("💡 Example Prompts"):
+            try:
+                st.write(
+                    f"""
+                        * Identify the top 10 skills mentioned across all job descriptions.
+                        * What are the most common experience levels required for jobs?
+                        * What are the emerging job trends based on recent job descriptions?
+                        * Which locations have the highest demand for this position?
+                        * Can you summarize the primary responsibilities mentioned in job descriptions?
+                        * Can you identify any patterns related to remote work or flexible schedules in the job descriptions?
+                        * Do job descriptions from different regions emphasize different aspects? If so, what are they?
+                        * What soft skills are frequently mentioned in job postings?
+                        * Provide top resources for mastering various technologies to become proficient in {st.session_state.search_term} within a 3 to 4 month timeframe, along with a comprehensive study plan.
+                    """
+                )
+            except:
+                pass
         
+        if 'rag_history' not in st.session_state:
+            st.session_state.rag_history=[{'role':'assistant', 'content':'How may I help you?'}]
+
+        if user_query := st.chat_input("Eg: Can you summarize the key insights from the job descriptions?"):
+            # Append user query to chat history
+            st.session_state.rag_history.append(HumanMessage(content=user_query))
+            
+            # Get response from RAG chain and append to chat history
+            st.session_state.rag_history.append(AIMessage(content=get_response(db=st.session_state['db'],user_query=user_query,history=st.session_state.rag_history)))
+                    
+            # Display chat history
+        for message in st.session_state.rag_history:
+            if isinstance(message, HumanMessage):
+                with st.chat_message('Human'):
+                    st.write(message.content)
+            if isinstance(message, AIMessage):
+                with st.chat_message('AI'):
+                    with st.spinner("Thinking ... "):
+                        st.write(message.content)
+    else:
+        st.info('Perform data extraction for context setting before engaging with the Retrieval-Augmented Generation (RAG) system.')
 #----------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    st.set_page_config(page_title="JobInsights - AI-driven job seeker")
+    st.set_page_config(page_title="JobInsights - AI-driven job seeker",page_icon='💼')
 
     feature_tabs = st.sidebar.radio(
         "Features",
         [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**RAG System**"],
-        captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements."]
+        captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements.","same as AI Conversation but with vector-database"]
     )
 
     if feature_tabs == ":rainbow[**Home**]":

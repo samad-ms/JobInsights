@@ -7,6 +7,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
+from langchain.chains import create_history_aware_retriever
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -26,19 +30,40 @@ def jd_to_vectorestore(data):
     db = Chroma.from_documents(documents,OpenAIEmbeddings())
     return db
 
-def retrive_data_and_respose(db,input):
-    prompt = ChatPromptTemplate.from_template("""
-        Answer the following question based only on the provided context(context is job discriptions). 
-        Think well before providing a detailed answer. 
-        <context>
-        {context}
-        </context>
-        Question: {input}""")
-    llm=ChatOpenAI()
-    document_chain=create_stuff_documents_chain(llm,prompt)
-    retriever=db.as_retriever()
-    retrieval_chain=create_retrieval_chain(retriever,document_chain)
-    response=retrieval_chain.invoke({"input":input})
+def get_context_retriever(vectore_store):
+    # Define the prompt template for the retriever
+    prompt = ChatPromptTemplate.from_messages([
+        MessagesPlaceholder(variable_name='chat_history'),
+        ('user', "{input}"),
+        ('user', "Given the above conversation, generate a search query to look up in order to get the relevant information based on the conversation")
+    ])
+    llm = ChatOpenAI()
+    retriever = vectore_store.as_retriever()
+    
+    # Create a history-aware retriever chain
+    history_aware_retriever_chain = create_history_aware_retriever(
+        llm, retriever, prompt
+    )
+    return history_aware_retriever_chain
+
+def get_rag_chain(history_aware_retriever_chain):
+    # Define the prompt template for the RAG chain
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "Answer the user's questions based on below context:\n\n{context}"),
+        MessagesPlaceholder(variable_name='chat_history'),
+        ('user', "{input}"),
+    ])
+    llm = ChatOpenAI(model="gpt-3.5-turbo")
+    stuff_documents_chain = create_stuff_documents_chain(llm, prompt)
+    rag_chain = create_retrieval_chain(history_aware_retriever_chain, stuff_documents_chain)
+    return rag_chain
+
+def get_response(db,user_query,history):
+    context_retriever_chain = get_context_retriever(vectore_store=db)
+    rag_chain = get_rag_chain(context_retriever_chain)
+    
+    response = rag_chain.invoke({
+        "chat_history": history,
+        "input": user_query
+    })
     return response['answer']
-    
-    

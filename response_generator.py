@@ -3,7 +3,6 @@ import streamlit as st
 import google.generativeai as genai
 import re
 import json
-# from json_retrieval_prompt import retrieve_prompt
 import os
 
 genai.configure(api_key = st.secrets['GEMINI_API_KEY'])
@@ -12,9 +11,12 @@ chat = model.start_chat(history = [])
 
 def chat_with_gemini(prompt):
     try:
-        response = chat.send_message(prompt, stream = True)
-        for chunk in response:
-            yield chunk.text
+        # response = chat.send_message(prompt, stream = True)
+        # for chunk in response:
+        #     yield chunk.text
+        response = chat.send_message(prompt)
+        # return response["candidates"][0]["content"]["parts"][0]["text"]
+        return response.candidates[0].content.parts[0].text
 
         # Remove some chats from the history to reduce input overload to the model.
         print(model.count_tokens(chat.history))
