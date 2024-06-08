@@ -264,18 +264,21 @@ def ats_tab():
     if 'job_description' not in st.session_state:
         st.session_state.job_description=''
 
+
     try:
-        jd_submit = st.button('Collect real-time job description')
-        if (jd_submit and 'desc_string' in st.session_state) or st.session_state.job_description: #
-            job_description= create_job_descriptiion_demo(st.session_state.desc_string,st.session_state.search_term)
-        elif jd_submit and 'desc_string' not in st.session_state:
-            st.warning('To get real-time job descriptions, extract the data at least once.')
+        if jd_submit := st.button('Collect real-time job description'):
+            if ("desc_string" in st.session_state) or (st.session_state.desc_string is not None):
+                job_description= create_job_descriptiion_demo(st.session_state.desc_string,st.session_state.search_term if "search_term" in st.session_state else '')
+            else:
+                st.warning('To get real-time job descriptions, extract the data at least once.')
         else:
             job_description = st.text_area("If you have a job description in your hand, please paste the 'JOB DESCRIPTION' here...", key="1")
     except Exception as e:
-        st.error(f"Sorry, there is a problem: {e}")
-        
-    st.session_state.job_description=job_description
+        st.error(f"To get real-time job descriptions, extract the data at least once.")
+
+
+    if job_description:
+        st.session_state.job_description=job_description
     if st.session_state.job_description != '' and st.session_state.job_description is not None:    
         with st.expander('**confirm job discription**'):    
             st.write(st.session_state.job_description)
@@ -307,31 +310,31 @@ def ats_tab():
 
             # Fecth relavant documents from PINECONE
             relavant_docs=similar_docs(vectordb,st.session_state.job_description,document_count,st.session_state['unique_id'])
-            # st.write(relavant_docs)#--------------------------------------------------------------------------
 
             #Introducing a line separator
             # st.write(":heavy_minus_sign:" * 30)
+            if len(relavant_docs)>0:
+                for item in range(len(relavant_docs)):
+                    st.subheader("👉 "+str(item+1))
 
-            #For each item in relavant docs - we are displaying some info of it on the UI
-            for item in range(len(relavant_docs)):
-            
-                st.subheader("👉 "+str(item+1))
+                    #Displaying Filepath
+                    st.write("**File** : "+relavant_docs[item][0].metadata["name"])
 
-                #Displaying Filepath
-                st.write("**File** : "+relavant_docs[item][0].metadata["name"])
+                    #Introducing Expander feature
+                    with st.expander('Show me Match Score and Content👀'): 
+                        st.info("**Match Score** : "+str(relavant_docs[item][1]))
+                        # st.write("***"+relavant_docs[item][0].page_content)
 
-                #Introducing Expander feature
-                with st.expander('Show me Match Score and Content👀'): 
-                    st.info("**Match Score** : "+str(relavant_docs[item][1]))
-                    # st.write("***"+relavant_docs[item][0].page_content)
+                        #Gets the summary of the current item using 'get_summary' function that we have created which uses LLM & Langchain chain
+                        # st.write(relavant_docs[item][0])#--------------------
+                        # st.write(relavant_docs[item][0].page_content)#--------------------
+                        summary = get_summary(relavant_docs[item][0])['output_text']
+                        st.write("**Summary** : "+str(summary))
+                st.success("Hope I help you to find the best resume⏰")
+            else:
+                st.write('please click "Help me with the analysis"')
 
-                    #Gets the summary of the current item using 'get_summary' function that we have created which uses LLM & Langchain chain
-                    # st.write(relavant_docs[item][0])#--------------------
-                    # st.write(relavant_docs[item][0].page_content)#--------------------
-                    summary = get_summary(relavant_docs[item][0])['output_text']
-                    st.write("**Summary** : "+str(summary))
-
-            st.success("Hope I was able to save your time⏰")        
+                    
 #----------------------------------------------------------------------------------------
 def email_tab():
     emails = """
