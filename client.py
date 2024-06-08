@@ -264,17 +264,20 @@ def ats_tab():
     if 'job_description' not in st.session_state:
         st.session_state.job_description=''
 
-    jd_submit = st.button('Collect real-time job description')
-    if (jd_submit and 'desc_string' in st.session_state) or st.session_state.job_description: #
-        job_description= create_job_descriptiion_demo(st.session_state.desc_string,st.session_state.search_term)
-    elif jd_submit and 'desc_string' not in st.session_state:
-        st.warning('To get real-time job descriptions, extract the data at least once.')
-    else:
-        job_description = st.text_area("If you have a job description in your hand, please paste the 'JOB DESCRIPTION' here...", key="1")
-    
+    try:
+        jd_submit = st.button('Collect real-time job description')
+        if (jd_submit and 'desc_string' in st.session_state) or st.session_state.job_description: #
+            job_description= create_job_descriptiion_demo(st.session_state.desc_string,st.session_state.search_term)
+        elif jd_submit and 'desc_string' not in st.session_state:
+            st.warning('To get real-time job descriptions, extract the data at least once.')
+        else:
+            job_description = st.text_area("If you have a job description in your hand, please paste the 'JOB DESCRIPTION' here...", key="1")
+    except Exception as e:
+        st.error(f"Sorry, there is a problem: {e}")
+        
     st.session_state.job_description=job_description
     if st.session_state.job_description != '' and st.session_state.job_description is not None:    
-        with st.expander('confirm job discription'):    
+        with st.expander('**confirm job discription**'):    
             st.write(st.session_state.job_description)
     
     document_count = st.text_input("how many top ranked resume to return back",key="2")
@@ -369,6 +372,8 @@ def email_tab():
     with st.expander(f"**Types of Emails Used in the Job Hunting Process**"):
         st.write(emails)
 
+    email_type = st.selectbox("Select Email Type: ", ["Application Email", "Follow-Up Email", "Thank-You Email", "Acceptance Email", "Withdrawal Email", "Update Email", "Cover Letter", "Other"], key="select_email_type")
+
     form_input = st.text_area('Enter the email topic',placeholder='Application for Machine Learning Engineer Role at ExampleTech',height=200)
 
     # Creating columns for the UI - To receive inputs from user
@@ -392,7 +397,7 @@ def email_tab():
     response=None
     if submit:
         with st.spinner("Thinking ... "):
-            response=get_email_Response(form_input, email_sender, email_recipient, email_style,Signature)
+            response=get_email_Response(form_input, email_sender, email_recipient,email_type,email_style,Signature)
         # clipboard.copy(f"{response.content}")
         # st.success("Text copied to clipboard!")
             st.write(response.content)
@@ -405,7 +410,7 @@ if __name__ == "__main__":
 
     feature_tabs = st.sidebar.radio(
         "Features",
-        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**RAG System**","**ATS System**","**Email Generator**"],
+        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**Conversation with RAG System**","**ATS System**","**Email Generator**"],
         captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements.","same as AI Conversation but with vector-database","AI tool for efficient and accurate resume screening in ATS","generating various types of emails with different styles"]
     )
 
@@ -415,7 +420,7 @@ if __name__ == "__main__":
         extraction_tab()
     elif feature_tabs == "**AI Conversation**":
         chat_tab()
-    elif feature_tabs == "**RAG System**":
+    elif feature_tabs == "**Conversation with RAG System**":
         chat_tab_for_gpt()
     elif feature_tabs == "**ATS System**":
         ats_tab()
