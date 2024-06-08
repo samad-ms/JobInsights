@@ -2,3 +2,4 @@
 /.streamlit
 /test.py
 test.py
+.env

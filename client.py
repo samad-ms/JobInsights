@@ -7,6 +7,10 @@ from download_csv import get_table_download_link
 from response_generator import set_initial_message
 from response_generator import chat_with_gemini
 from retriver import jd_to_vectorestore,get_response
+from ats_utils import *
+import uuid
+
+from test import *
 
 
 #----------------------------------------------------------------------------------------
@@ -199,7 +203,7 @@ def chat_tab():
 #----------------------------------------------------------------------------------------                    
 def chat_tab_for_gpt():
     """Chat Interface"""
-    st.title("Converse with RAG System.")
+    st.title("Conversation with RAG System.")
     if 'db' in st.session_state:    
         with st.expander("💡 Tips"):
             st.write(
@@ -251,13 +255,97 @@ def chat_tab_for_gpt():
     else:
         st.info('Perform data extraction for context setting before engaging with the Retrieval-Augmented Generation (RAG) system.')
 #----------------------------------------------------------------------------------------
+def ats_tab():
+    """Chat Interface"""
+    st.title("ATS Score Checker")
+    with st.expander("💡 Tips"):
+        st.write(
+        """
+        * Ensure to extract the data to check with real time job discriptions.
+        """
+        )
+    
+    pdf = st.file_uploader("Upload resumes here, only PDF files allowed", type=["pdf"],accept_multiple_files=True)
+    
+    if 'job_description' not in st.session_state:
+        st.session_state.job_description=''
+
+    jd_submit = st.button('Collect real-time job description')
+    if (jd_submit and 'desc_string' in st.session_state) or st.session_state.job_description: #
+        job_description= create_job_descriptiion_demo(st.session_state.desc_string,st.session_state.search_term)
+    elif jd_submit and 'desc_string' not in st.session_state:
+        st.warning('To get real-time job descriptions, extract the data at least once.')
+    else:
+        job_description = st.text_area("If you have a job description in your hand, please paste the 'JOB DESCRIPTION' here...", key="1")
+    
+    st.session_state.job_description=job_description
+    if st.session_state.job_description != '' and st.session_state.job_description is not None:    
+        with st.expander('confirm job discription'):    
+            st.write(st.session_state.job_description)
+    
+    document_count = st.text_input("how many top ranked resume to return back",key="2")
+    submit=st.button("Help me with the analysis")
+
+
+    if submit and st.session_state.job_description:
+        with st.spinner('Wait for it...'):
+
+            #Creating a unique ID, so that we can use to query and get only the user uploaded documents from PINECONE vector store
+            st.session_state['unique_id']=uuid.uuid4().hex
+
+            #Create a documents list out of all the user uploaded pdf files
+            final_docs_list=create_docs(pdf,st.session_state['unique_id'])
+            # st.write(final_docs_list)#-------------------------------------
+
+            # Displaying the count of resumes that have been uploaded
+            st.write("*Resumes uploaded* :"+str(len(final_docs_list)))
+
+#             #Create embeddings instance
+            embeddings=create_embeddings_load_data()
+            # st.write(embeddings.embed_query("This is a test document."))#-------------------------------------
+        
+            #Push data to PINECONE
+            ##push_to_pinecone(pinecone_apikey,pinecone_index_name,embeddings,docs):
+            vectordb=push_to_pinecone(embeddings=embeddings,docs=final_docs_list)
+
+            # Fecth relavant documents from PINECONE
+            relavant_docs=similar_docs(vectordb,st.session_state.job_description,document_count,st.session_state['unique_id'])
+            # st.write(relavant_docs)#--------------------------------------------------------------------------
+
+            #Introducing a line separator
+            # st.write(":heavy_minus_sign:" * 30)
+
+            #For each item in relavant docs - we are displaying some info of it on the UI
+            for item in range(len(relavant_docs)):
+            
+                st.subheader("👉 "+str(item+1))
+
+                #Displaying Filepath
+                st.write("**File** : "+relavant_docs[item][0].metadata["name"])
+
+                #Introducing Expander feature
+                with st.expander('Show me Match Score and Content👀'): 
+                    st.info("**Match Score** : "+str(relavant_docs[item][1]))
+                    # st.write("***"+relavant_docs[item][0].page_content)
+
+                    #Gets the summary of the current item using 'get_summary' function that we have created which uses LLM & Langchain chain
+                    # st.write(relavant_docs[item][0])#--------------------
+                    # st.write(relavant_docs[item][0].page_content)#--------------------
+                    summary = get_summary(relavant_docs[item][0])['output_text']
+                    st.write("**Summary** : "+str(summary))
+
+            st.success("Hope I was able to save your time⏰")
+        
+#----------------------------------------------------------------------------------------
+
+
 if __name__ == "__main__":
     st.set_page_config(page_title="JobInsights - AI-driven job seeker",page_icon='💼')
 
     feature_tabs = st.sidebar.radio(
         "Features",
-        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**RAG System**"],
-        captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements.","same as AI Conversation but with vector-database"]
+        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**RAG System**","**ATS System**"],
+        captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements.","same as AI Conversation but with vector-database","AI tool for efficient and accurate resume screening in ATS"]
     )
 
     if feature_tabs == ":rainbow[**Home**]":
@@ -268,6 +356,8 @@ if __name__ == "__main__":
         chat_tab()
     elif feature_tabs == "**RAG System**":
         chat_tab_for_gpt()
+    elif feature_tabs == "**ATS System**":
+        ats_tab()
 
     st.sidebar.markdown("""
     <style>

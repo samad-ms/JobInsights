@@ -16,8 +16,10 @@ def generate_streamlit_folder():
     GEMINI_API_KEY = input("Enter your GEMINI_API_KEY: ").strip()
     OPENAI_API_KEY = input("Enter your OPENAI_API_KEY: ").strip()
     LANGCHAIN_API_KEY = input("Enter your LANGCHAIN_API_KEY: ").strip()
-    LANGCHAIN_TRACING_V2="true"
-    LANGCHAIN_PROJECT="JobInsights"
+    # LANGCHAIN_TRACING_V2="true"
+    # LANGCHAIN_PROJECT="JobInsights"
+    PINECONE_INDEX_NAME=input("Enter your PINECONE_INDEX_NAME: ").strip()
+    PINECONE_API_KEY=input("Enter your PINECONE_API_KEY: ").strip()
     # Write API key to secrets.toml
     with open(secrets_file, "w") as f:
         f.write(f"GEMINI_API_KEY=\"{GEMINI_API_KEY}\"\n")
@@ -25,6 +27,8 @@ def generate_streamlit_folder():
         f.write(f"LANGCHAIN_API_KEY=\"{LANGCHAIN_API_KEY}\"\n")
         f.write(f"LANGCHAIN_TRACING_V2=\"'true'\"\n")
         f.write(f"LANGCHAIN_PROJECT=\"'JobInsights'\"\n")
+        f.write(f"PINECONE_INDEX_NAME=\"{PINECONE_INDEX_NAME}\"\n")
+        f.write(f"PINECONE_API_KEY=\"{PINECONE_API_KEY}\"\n")
 
     print("API key has been saved to secrets.toml.")
 
