@@ -27,11 +27,13 @@ def home_tab():
 
         #### Features
 
-        * **Job Summarization:** Automatically generates concise summaries of job descriptions, highlighting key details for quick understanding of job requirements.
-        * **Skill Matching:** Identifies the most relevant skills for each job, allowing you to tailor your resume and cover letter effectively.
-        * **Interview Insights:** Provides interview questions and tips based on job descriptions, aiding in interview preparation.
-        * **Chat Functionality:** Enables interaction with the AI to inquire about specific job preferences or seek career advice.
-             
+        * **Data Extraction:** Extract job information as CSV from various popular websites such as Indeed, LinkedIn, Glassdoor, and ZipRecruiter.
+        * **AI Conversation:** Chat with the AI model to summarize job requirements.
+        * **Conversation with RAG System:** Same as AI Conversation but with vector-database .
+        * **ATS System:** AI tool for efficient and accurate resume screening in ATS.
+        * **Email Generator:** Generate various types of emails with different styles.
+        * **More additional features**
+
         #### Links:
         - [GitHub Repository](https://github.com/samad-ms/JobInsights)
         - [LinkedIn Profile](https://www.linkedin.com/in/abdul-samad-86b158243/)
@@ -322,7 +324,7 @@ def ats_tab():
 
                     #Introducing Expander feature
                     with st.expander('Show me Match Score and Content👀'): 
-                        st.info("**Match Score** : "+str(relavant_docs[item][1]))
+                        st.info(f"Match Score: {str(int(100*(relavant_docs[item][1])))} %")
                         # st.write("***"+relavant_docs[item][0].page_content)
 
                         #Gets the summary of the current item using 'get_summary' function that we have created which uses LLM & Langchain chain
@@ -332,9 +334,7 @@ def ats_tab():
                         st.write("**Summary** : "+str(summary))
                 st.success("Hope I help you to find the best resume⏰")
             else:
-                st.write('please click "Help me with the analysis"')
-
-                    
+                st.write('please click "Help me with the analysis"')                   
 #----------------------------------------------------------------------------------------
 def email_tab():
     emails = """
@@ -423,7 +423,7 @@ def email_tab():
         # clipboard.copy(f"{response.content}")
         # st.success("Text copied to clipboard!")
             st.write(response.content)
-    
+#----------------------------------------------------------------------------------------
 def Additional_features():
     """ Additional features Tab """
     st.title("🔍 Additional Features, Coming Soon...!")
@@ -434,7 +434,6 @@ def Additional_features():
     
     Share your thoughts and ideas to integrate, and also, welcome to contributions and debugging!
     """)
-
 #----------------------------------------------------------------------------------------
 if __name__ == "__main__":
     st.set_page_config(page_title="JobInsights - AI-driven job seeker",page_icon='💼')
@@ -482,4 +481,4 @@ if __name__ == "__main__":
     <a href="https://github.com/samad-ms/JobInsights">Contributions</a>
     </div>
     """, unsafe_allow_html=True)
-
+#----------------------------------------------------------------------------------------
