@@ -8,7 +8,7 @@ from response_generator import set_initial_message
 from response_generator import chat_with_gemini
 from retriver import jd_to_vectorestore,get_response
 from ats_utils import *
-from email_utils import get_email_Response
+from email_utils import *
 import uuid
 
 
@@ -375,17 +375,36 @@ def email_tab():
     email_type = st.selectbox("Select Email Type: ", ["Application Email", "Follow-Up Email", "Thank-You Email", "Acceptance Email", "Withdrawal Email", "Update Email", "Cover Letter", "Other"], key="select_email_type")
 
     form_input = st.text_area('Enter the email topic',placeholder='Application for Machine Learning Engineer Role at ExampleTech',height=200)
-
     # Creating columns for the UI - To receive inputs from user
-    col1, col2, col3 = st.columns([10, 10, 5])
+    col1, col2 = st.columns([10, 10])
     with col1:
         email_sender = st.text_input('Sender Name')
     with col2:
         email_recipient = st.text_input('Recipient Name')
-    with col3:
-        email_style = st.selectbox('Writing Style',
-                                ('Formal', 'Appreciating', 'Not Satisfied', 'Neutral'),
-                                index=0)
+    
+
+    candidate_details_text=""
+    
+    candidate_details_fetch_from = st.selectbox("Gather additional professional information from:", ["Resume", "Portfolio website","Write","Not mentioned"], key="candidate_details")
+    if candidate_details_fetch_from=='Resume':
+        resume_pdf = st.file_uploader("Upload resumes here, only PDF files allowed", type=["pdf"],accept_multiple_files=True)
+        # st.session_state['unique_id']=uuid.uuid4().hex
+        # candidate_details_text=create_docs(resume_pdf,st.session_state['unique_id']) #if multiple files comes
+        if candidate_details_text:=create_docs(resume_pdf,1):
+            candidate_details_text=candidate_details_text[0].page_content
+    elif candidate_details_fetch_from=='Portfolio website':
+        if website_url := st.text_input('provide your website url , which have relevent information about you..'):
+            candidate_details_text=get_candidate_details(website_url=website_url,candidate_name=email_sender)
+    elif candidate_details_fetch_from=="Write":
+        candidate_details_text=st.text_area('write about yourself',placeholder="Ex: self-taught Machine Learning Engineer at Brototype, Kochi, specializing in developing AI-powered solutions for job search optimization and demonstrating proficiency in Python, Machine Learning, Deep Learning, NLP, and computer vision.")               
+    else:
+        candidate_details_text=""
+
+    if candidate_details_text:
+        if ("candidate_details_text" not in st.session_state) or candidate_details_text:
+            st.session_state.candidate_details_text=candidate_details_text
+        with st.expander("**confirm candidate details**"):
+            st.write(st.session_state.candidate_details_text)
 
     Signature = st.text_area('Signature: your contact details (job title, company, phone number, etc.)',
                             placeholder="""Abdul Samad \nMachine Learning Engineer \nExampleTech \nsamad.example@gmail.com \n+91-1234567890 \n """
@@ -397,12 +416,21 @@ def email_tab():
     response=None
     if submit:
         with st.spinner("Thinking ... "):
-            response=get_email_Response(form_input, email_sender, email_recipient,email_type,email_style,Signature)
+            response=get_email_Response(form_input, email_sender, email_recipient,email_type,Signature,candidate_details_text=candidate_details_text)
         # clipboard.copy(f"{response.content}")
         # st.success("Text copied to clipboard!")
             st.write(response.content)
     
-
+def Additional_features():
+    """ Additional features Tab """
+    st.title("🔍 Additional Features, Coming Soon...!")
+    st.write("""
+    1) Building resumes from text or portfolios that match real-time job requirements.
+    2) AI for preparing learning materials and interview preparation.
+    3) And many more exciting features to come!
+    
+    Share your thoughts and ideas to integrate, and also, welcome to contributions and debugging!
+    """)
 
 #----------------------------------------------------------------------------------------
 if __name__ == "__main__":
@@ -410,7 +438,7 @@ if __name__ == "__main__":
 
     feature_tabs = st.sidebar.radio(
         "Features",
-        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**Conversation with RAG System**","**ATS System**","**Email Generator**"],
+        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**Conversation with RAG System**","**ATS System**","**Email Generator**","**Additional features**"],
         captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements.","same as AI Conversation but with vector-database","AI tool for efficient and accurate resume screening in ATS","generating various types of emails with different styles"]
     )
 
@@ -426,6 +454,8 @@ if __name__ == "__main__":
         ats_tab()
     elif feature_tabs == "**Email Generator**":
         email_tab()
+    elif feature_tabs == "**Additional features**":
+        Additional_features()
 
     st.sidebar.markdown("""
     <style>
