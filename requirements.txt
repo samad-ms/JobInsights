@@ -13,4 +13,5 @@ python-jobspy
 google-generativeai
 chromadb
 pandas>=2.1.0,<3.0.0
+sqlite==3.35.0
 
