@@ -8,9 +8,8 @@ from response_generator import set_initial_message
 from response_generator import chat_with_gemini
 from retriver import jd_to_vectorestore,get_response
 from ats_utils import *
+from email_utils import get_email_Response
 import uuid
-
-from test import *
 
 
 #----------------------------------------------------------------------------------------
@@ -40,9 +39,7 @@ def home_tab():
 
     st.write("### Welcome Contributions!")
     st.write("We welcome contributions from the community to improve JobInsights. Whether it's adding new features, fixing bugs, or enhancing documentation, every contribution matters!")
-
 #----------------------------------------------------------------------------------------
-
 def extraction_tab():
     """Data Extraction Tab"""
 
@@ -146,11 +143,9 @@ def extraction_tab():
 
     if st.session_state.df is not None:
         st.dataframe(st.session_state.df)
-
 if 'messages' not in st.session_state.keys():
     st.session_state.messages = [{'role':'assistant', 'content':'How may I help you?'}]
 #----------------------------------------------------------------------------------------
-
 def chat_tab():
     """Chat Interface"""
     st.title("Conversation with AI.")
@@ -199,7 +194,6 @@ def chat_tab():
             with st.chat_message('assistant'):
                 with st.spinner("Thinking ... "):
                     st.write(message['content'])
-
 #----------------------------------------------------------------------------------------                    
 def chat_tab_for_gpt():
     """Chat Interface"""
@@ -334,18 +328,85 @@ def ats_tab():
                     summary = get_summary(relavant_docs[item][0])['output_text']
                     st.write("**Summary** : "+str(summary))
 
-            st.success("Hope I was able to save your time⏰")
-        
+            st.success("Hope I was able to save your time⏰")        
 #----------------------------------------------------------------------------------------
+def email_tab():
+    emails = """
+        **1. Application Email**:
+        - **Purpose**: To apply for a specific job opening.
+        - **Content**: Includes a cover letter, resume, and any additional required documents.
+        - **Example Subject**: Application for [Job Title] Position
+
+        **2. Follow-Up Email**:
+        - **Purpose**: To inquire about the status of an application or express continued interest.
+        - **Content**: Polite inquiry about application status, reiteration of interest, and availability for further discussions.
+        - **Example Subject**: Follow-Up on Job Application for [Job Title] Position
+
+        **3. Thank-You Email**:
+        - **Purpose**: To thank the interviewer(s) for the opportunity to interview.
+        - **Content**: Expresses gratitude, reiterates interest, and may include a brief mention of something discussed during the interview.
+        - **Example Subject**: Thank You for the Interview - [Job Title] Position
+
+        **4. Acceptance Email**:
+        - **Purpose**: To formally accept a job offer.
+        - **Content**: Expresses gratitude for the offer, confirms acceptance, and may include any requested information, such as start date availability.
+        - **Example Subject**: Acceptance of Job Offer for [Job Title] Position
+
+        **5. Withdrawal Email**:
+        - **Purpose**: To withdraw an application from consideration.
+        - **Content**: States the decision to withdraw, expresses appreciation for the opportunity, and may include a brief reason for withdrawal (optional).
+        - **Example Subject**: Withdrawal of Application for [Job Title] Position
+
+        **6. Update Email**:
+        - **Purpose**: To provide updated information or qualifications.
+        - **Content**: Clearly states the update (e.g., completed course, obtained certification) and expresses continued interest in the position.
+        - **Example Subject**: Updated Information for [Job Title] Application
+        """
 
 
+    st.header("Generate Emails 📧")
+
+    with st.expander(f"**Types of Emails Used in the Job Hunting Process**"):
+        st.write(emails)
+
+    form_input = st.text_area('Enter the email topic',placeholder='Application for Machine Learning Engineer Role at ExampleTech',height=200)
+
+    # Creating columns for the UI - To receive inputs from user
+    col1, col2, col3 = st.columns([10, 10, 5])
+    with col1:
+        email_sender = st.text_input('Sender Name')
+    with col2:
+        email_recipient = st.text_input('Recipient Name')
+    with col3:
+        email_style = st.selectbox('Writing Style',
+                                ('Formal', 'Appreciating', 'Not Satisfied', 'Neutral'),
+                                index=0)
+
+    Signature = st.text_area('Signature: your contact details (job title, company, phone number, etc.)',
+                            placeholder="""Abdul Samad \nMachine Learning Engineer \nExampleTech \nsamad.example@gmail.com \n+91-1234567890 \n """
+                            ,height=100)
+    # st.write(Signature)
+    submit = st.button("Generate")
+
+    # When 'Generate' button is clicked, execute the below code
+    response=None
+    if submit:
+        with st.spinner("Thinking ... "):
+            response=get_email_Response(form_input, email_sender, email_recipient, email_style,Signature)
+        # clipboard.copy(f"{response.content}")
+        # st.success("Text copied to clipboard!")
+            st.write(response.content)
+    
+
+
+#----------------------------------------------------------------------------------------
 if __name__ == "__main__":
     st.set_page_config(page_title="JobInsights - AI-driven job seeker",page_icon='💼')
 
     feature_tabs = st.sidebar.radio(
         "Features",
-        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**RAG System**","**ATS System**"],
-        captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements.","same as AI Conversation but with vector-database","AI tool for efficient and accurate resume screening in ATS"]
+        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**RAG System**","**ATS System**","**Email Generator**"],
+        captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements.","same as AI Conversation but with vector-database","AI tool for efficient and accurate resume screening in ATS","generating various types of emails with different styles"]
     )
 
     if feature_tabs == ":rainbow[**Home**]":
@@ -358,6 +419,8 @@ if __name__ == "__main__":
         chat_tab_for_gpt()
     elif feature_tabs == "**ATS System**":
         ats_tab()
+    elif feature_tabs == "**Email Generator**":
+        email_tab()
 
     st.sidebar.markdown("""
     <style>
