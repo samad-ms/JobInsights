@@ -428,9 +428,10 @@ def Additional_features():
     """ Additional features Tab """
     st.title("🔍 Additional Features, Coming Soon...!")
     st.write("""
-    1) Building resumes from text or portfolios that match real-time job requirements.
-    2) AI for preparing learning materials and interview preparation.
-    3) And many more exciting features to come!
+    1) Building resumes from raw text or portfolios, that match real-time job requirements.
+    2) interview preparation AI from Resume and real time job requirement for the particular job role 
+    3) AI for preparing learning materials interview preparation
+    4) And many more exciting features to come!
     
     Share your thoughts and ideas to integrate, and also, welcome to contributions and debugging!
     """)
