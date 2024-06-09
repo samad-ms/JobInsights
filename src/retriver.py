@@ -2,7 +2,7 @@
 from StringLineLoader import StringLineLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai.embeddings import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -27,7 +27,7 @@ def jd_to_vectorestore(data):
     docs=loader.load()
     text_splitter=RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200)
     documents=text_splitter.split_documents(docs)
-    db = Chroma.from_documents(documents,OpenAIEmbeddings())
+    db = FAISS.from_documents(documents,OpenAIEmbeddings())
     return db
 
 def get_context_retriever(vectore_store):
