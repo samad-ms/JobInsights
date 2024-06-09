@@ -265,7 +265,7 @@ def ats_tab():
     
     if 'job_description' not in st.session_state:
         st.session_state.job_description=''
-
+    job_description = ''
 
     try:
         if jd_submit := st.button('Collect real-time job description'):
@@ -279,7 +279,7 @@ def ats_tab():
         st.error(f"To get real-time job descriptions, extract the data at least once.")
 
 
-    if job_description:
+    if job_description != '' and job_description is not None:
         st.session_state.job_description=job_description
     if st.session_state.job_description != '' and st.session_state.job_description is not None:    
         with st.expander('**confirm job discription**'):    
