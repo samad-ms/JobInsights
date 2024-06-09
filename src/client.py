@@ -279,7 +279,7 @@ def ats_tab():
         st.error(f"To get real-time job descriptions, extract the data at least once.")
 
 
-    if job_description != '' and job_description is not None:
+    if job_description:
         st.session_state.job_description=job_description
     if st.session_state.job_description != '' and st.session_state.job_description is not None:    
         with st.expander('**confirm job discription**'):    
