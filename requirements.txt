@@ -1,4 +1,4 @@
-jobspy==0.1.0
+jobspy
 langchain==0.0.96
 langchain-community==0.0.1
 langchain-core==0.0.1
