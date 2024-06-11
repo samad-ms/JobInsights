@@ -2,6 +2,13 @@ Certainly! Here's an expanded version of the README with more detailed explanati
 
 # JobInsights
 
+## Application | Report | Source Code
+
+- **Application:** [[Live Link](https://job-insights.streamlit.app/)](#)
+- **Report:** [Report Link](#)
+- **Source Code:** [GitHub Repository](#)
+
+
 ![Python](https://img.shields.io/badge/python-v3.11.3-blue)
 ![OpenAI](https://img.shields.io/badge/OpenAI-v3.5-blue)
 ![LangChain](https://img.shields.io/badge/LangChain-Icon-green)
@@ -21,12 +28,6 @@ Developed JobInsights, an AI-powered application designed to streamline the job 
 
 ## Technologies
 JobInsights is built using Python and incorporates specialized scraping libraries for data extraction. The user interface is developed using Streamlit for an interactive experience. The application leverages the power of GPT-3.5-turbo for natural language processing, Gemini 1.0 Pro for deep market analysis, and LangChain for efficient data processing. Additionally, Agents are used for task automation, while Pinecone serves as the vector database for storing and retrieving data efficiently.
-
-## Application | Report | Source Code
-
-- **Application:** [Live Link](#)
-- **Report:** [Report Link](#)
-- **Source Code:** [GitHub Repository](#)
 
 - ## Usage
 
