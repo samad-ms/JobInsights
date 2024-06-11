@@ -5,7 +5,7 @@ Certainly! Here's an expanded version of the README with more detailed explanati
 ## Application | Report | Source Code
 
 - **Application:** https://job-insights.streamlit.app/
-- **Report:** https://abduls-organization-13.gitbook.io/abduls-portfolio
+- **Report:** https://abduls-organization-13.gitbook.io/abduls-portfolio/projects/job-insights
 
 
 ![Python](https://img.shields.io/badge/python-v3.11.3-blue)
