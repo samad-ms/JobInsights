@@ -1,13 +1,4 @@
-Certainly! Here's an expanded version of the README with more detailed explanations for each feature and technology:
-
 # JobInsights
-
-## Application | Report | Source Code
-
-- **Application:** https://job-insights.streamlit.app/
-- **Report:** https://abduls-organization-13.gitbook.io/abduls-portfolio/projects/job-insights
-
-
 ![Python](https://img.shields.io/badge/python-v3.11.3-blue)
 ![OpenAI](https://img.shields.io/badge/OpenAI-v3.5-blue)
 ![LangChain](https://img.shields.io/badge/LangChain-Icon-green)
@@ -15,6 +6,12 @@ Certainly! Here's an expanded version of the README with more detailed explanati
 ![Streamlit](https://img.shields.io/badge/streamlit-v1.0.0-green)
 ![Pinecone](https://img.shields.io/badge/Pinecone-Icon-green)
 ![RAG](https://img.shields.io/badge/RAG-Icon-green)
+
+
+## Application | Report | Source Code
+
+- **Application:** https://job-insights.streamlit.app/
+- **Report:** https://abduls-organization-13.gitbook.io/abduls-portfolio/projects/job-insights
 
 ## Description
 Developed JobInsights, an AI-powered application designed to streamline the job hunting process by aggregating real-time data from popular job platforms such as Indeed, LinkedIn, Glassdoor, and ZipRecruiter. The application utilizes advanced technologies including GPT-3.5-turbo, Gemini 1.0 Pro, and LangChain for comprehensive job market analysis and optimization.
