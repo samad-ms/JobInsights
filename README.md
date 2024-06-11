@@ -4,9 +4,8 @@ Certainly! Here's an expanded version of the README with more detailed explanati
 
 ## Application | Report | Source Code
 
-- **Application:** [[Live Link](https://job-insights.streamlit.app/)](#)
-- **Report:** [Report Link](#)
-- **Source Code:** [GitHub Repository](#)
+- **Application:** https://job-insights.streamlit.app/
+- **Report:** https://abduls-organization-13.gitbook.io/abduls-portfolio
 
 
 ![Python](https://img.shields.io/badge/python-v3.11.3-blue)
