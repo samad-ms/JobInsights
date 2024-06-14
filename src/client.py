@@ -9,6 +9,7 @@ from response_generator import chat_with_gemini
 from retriver import jd_to_vectorestore,get_response
 from ats_utils import *
 from email_utils import *
+from visualization_utils import *
 import uuid
 
 
@@ -19,24 +20,43 @@ def home_tab():
     st.write("""
         #### What is it?
 
-        **JobInsights** is an AI-powered, advanced job searching and interactive application designed to streamline your job search process. It gathers data from popular websites such as Indeed, LinkedIn, Glassdoor, and ZipRecruiter, providing a personalized and comprehensive job summary and insights for each query.
+        **JobInsights** is an AI-powered application designed to streamline the job hunting process by aggregating real-time data from popular job platforms such as Indeed, LinkedIn, Glassdoor, and ZipRecruiter. The application provides personalized and comprehensive job summaries, insights, ways to optimize resumes, email generation during job searches, and many other features for each query.
 
         #### How it Works?
 
-        **JobInsights** leverages an advanced Large Language Model (LLM), GPT-3.5-turbo by OpenAI, to swiftly analyze and comprehend hundreds of job descriptions. This AI extracts vital details including required skills, experience levels, interview insights, and even offers tutorials and guides for job preparation. This automated process saves significant time by eliminating the need for manual sorting through numerous job postings.
+        **JobInsights** utilizes advanced technologies including GPT-3.5-turbo, Gemini, LIDA (Microsoft), LangChain, and vector databases to analyze and comprehend hundreds of job descriptions. By leveraging this understanding, the platform offers various features and strategies to secure job interviews and succeed in them. The automated process saves significant time by eliminating the need for rigorous manual work.
 
         #### Features
 
-        * **Data Extraction:** Extract job information as CSV from various popular websites such as Indeed, LinkedIn, Glassdoor, and ZipRecruiter.
-        * **AI Conversation:** Chat with the AI model to summarize job requirements.
-        * **Conversation with RAG System:** Same as AI Conversation but with vector-database .
-        * **ATS System:** AI tool for efficient and accurate resume screening in ATS.
-        * **Email Generator:** Generate various types of emails with different styles.
-        * **More additional features**
+        * **Data Extraction:** Extract real-time job information from popular websites.
+        * **Understand the Job Market:** Gain insights into the real-time job market through trend analysis and visualizations.
+        * **AI Conversation:** A general assistant that summarizes job requirements and answers general queries.
+        * **RAG AI System:** A specialized assistant that responds by considering the real-time job market as context.
+        * **ATS Score Checker and Resume Optimization:** Generates concise job descriptions and conducts similarity searches with resumes to identify the top matching resume between job seekers and available positions. It provides keywords to optimize the resume and improve the match.
+        * **Email Generator:** Create customized emails by extracting relevant details of candidates from resumes or portfolio links, enabling users to quickly and efficiently reach out to potential employers.
+        * **Additional Features:** JobInsights is continuously evolving to offer more exciting features. Stay tuned for:
+                - Building resumes from raw text or portfolios that match real-time job requirements.
+                - AI-driven interview preparation using resumes and real-time job requirements for specific job roles.
+                - AI for preparing learning materials and interview preparation.
+                - And many more exciting features to come!
 
-        #### Links:
-        - [GitHub Repository](https://github.com/samad-ms/JobInsights)
-        - [LinkedIn Profile](https://www.linkedin.com/in/abdul-samad-86b158243/)
+        #### Technologies
+
+        JobInsights is built using Python and incorporates specialized scraping libraries for data extraction. The user interface is developed using Streamlit for an interactive experience. The application leverages the power of GPT-3.5-turbo for natural language processing, Gemini 1.0 Pro for deep market analysis, LIDA by Microsoft for Visualization tasks, LangChain for efficient data processing, and Pinecone,FAISS as the vector database for storing and retrieving data efficiently.
+
+        #### Contributing
+
+        Contributions are welcome! If you have any suggestions or improvements, please feel free to open a pull request or an issue.
+
+        #### License
+
+        This project is licensed under the MIT License.
+
+        #### Links
+        - **Application:** [JobInsights](https://job-insights.streamlit.app/)
+        - **Report:** [Project Report](https://abduls-organization-13.gitbook.io/abduls-portfolio/projects/job-insights)
+        - **GitHub Repository:** [JobInsights GitHub](https://github.com/samad-ms/JobInsights)
+        - **LinkedIn Profile:** [Abdul Samad on LinkedIn](https://www.linkedin.com/in/abdul-samad-86b158243/)
     """)
 
     st.write("### Welcome Contributions!")
@@ -48,6 +68,50 @@ def extraction_tab():
     st.title("Fetch Job Data.")
     st.markdown("<br>", unsafe_allow_html=True)
 
+
+    with st.expander("🗺️ Step-by-Step Guide", expanded=False):
+        st.write(
+        """
+            Welcome to the Data Extraction feature! Follow these steps to efficiently extract job data from the platform.
+
+            1. **Select Site Name:**
+            - Options:
+                - Indeed
+                - LinkedIn
+                - Glassdoor
+                - Other 
+            - Instruction: Choose the job site from the list.
+
+            2. **Location (Optional):**
+            - Prompt: Enter the location where you want to search for jobs.
+            - Example: "Bangalore, India"
+            - Instruction: If you wish to specify a location, enter the city, state, or region. This step is optional and can be left blank to search nationwide.
+
+            3. **Search Term:**
+            - Prompt: Enter the job title or keywords related to the job you are searching for.
+            - Example: "Machine Learning Engineer (Entry Level)"
+            - Instruction: Input the specific job title or keywords that match the jobs you are interested in.
+
+            4. **Results Wanted:**
+            - Prompt: Specify the number of job listings you want to retrieve.
+            - Example: "1"
+            - Instruction: Enter the desired number of results. This determines how many job listings will be extracted.
+
+            5. **Country (Optional):**
+            - Prompt: Enter the country for the job search.
+            - Example: "India"
+            - Instruction: If you want to narrow down your search to a specific country, enter the country name. This step is optional.
+
+            **Example Workflow:**
+            - Select Site Name: LinkedIn
+            - Location (Optional): "Bangalore, India"
+            - Search Term: "Machine Learning Engineer (Entry Level)"
+            - Results Wanted: "1"
+            - Country (Optional): "India"        
+            
+            Click 'Download CSV File' to download the data and start applying.
+            """
+        )
     with st.expander("💡 Tips", expanded=False):
         st.write(
         """
@@ -70,10 +134,10 @@ def extraction_tab():
         site_name = st.selectbox("Select Site Name: ", ["indeed", "linkedin", "zip_recruiter", "glassdoor"], key="select_site")
     with col2:
         location = st.text_input("Location: Optional", key="location_input", placeholder='Enter Location to search')
-    search_term = st.text_input("Search Term", key="search_term_input", placeholder='Eg: Machine Learning Engineer')
+    search_term = st.text_input("Search Term", key="search_term_input", placeholder='Eg: Machine Learning Engineer (Entry Level)')
     col3, col4 = st.columns(2)
     with col3:
-        results_wanted = st.number_input("Results Wanted", key="results_wanted", min_value=1, max_value=500, step=1)
+        results_wanted = st.number_input("Results Wanted", key="results_wanted", min_value=10, max_value=500, step=1)
     with col4:
         if site_name == "indeed":
             country = st.text_input("Country: Optional", key="country_input", placeholder='Enter Country')
@@ -249,16 +313,34 @@ def chat_tab_for_gpt():
                     with st.spinner("Thinking ... "):
                         st.write(message.content)
     else:
-        st.info('Perform data extraction for context setting before engaging with the Retrieval-Augmented Generation (RAG) system.')
+        st.warning('Perform data extraction for context setting before engaging with the Retrieval-Augmented Generation (RAG) system.')
 #----------------------------------------------------------------------------------------
 def ats_tab():
     """Chat Interface"""
     st.title("ATS Score Checker")
-    with st.expander("💡 Tips"):
+    with st.expander("💡 **Step-by-Step Guide for Using the ATS Score Checker**"):
         st.write(
         """
-        * Ensure to extract the data to check with real time job discriptions.
-        """
+
+        **Professional Tip:** Enhance your job application strategy by creating multiple versions of your resume with diverse variations. This approach allows you to tailor your resume to specific job requirements, increasing your chances of standing out to potential employers. 
+
+        1. **Upload Resumes:**
+        - Ensure all files are in PDF format.
+        - Drag and drop your resume files into the designated area.
+
+        2. **Job Description:**
+        - If you possess a job description, insert it into the 'JOB DESCRIPTION' field.
+        - In the absence of a job description, click 'Collect Real-Time Job Description' to retrieve one.
+        - Confirm the job description by expanding the expander.
+
+        3. **Submit:**
+        - Initiate the analysis process by clicking 'Help me with the analysis'.
+
+        **Score, Summary, and Keywords:**
+
+        Upon submission, receive feedback on your best resume version, including a score, summary, and keywords. Incorporate these keywords into your resume to optimize its effectiveness and boost your score.
+        
+    """
         )
     
     pdf = st.file_uploader("Upload resumes here, only PDF files allowed", type=["pdf"],accept_multiple_files=True)
@@ -285,11 +367,12 @@ def ats_tab():
         with st.expander('**confirm job discription**'):    
             st.write(st.session_state.job_description)
     
-    document_count = st.text_input("how many top ranked resume to return back",key="2")
+    # document_count = st.text_input("how many top ranked resume to return back",key="2")
+    document_count= 1
     submit=st.button("Help me with the analysis")
 
 
-    if submit and st.session_state.job_description:
+    if submit:
         with st.spinner('Wait for it...'):
 
             #Creating a unique ID, so that we can use to query and get only the user uploaded documents from PINECONE vector store
@@ -331,10 +414,13 @@ def ats_tab():
                         # st.write(relavant_docs[item][0])#--------------------
                         # st.write(relavant_docs[item][0].page_content)#--------------------
                         summary = get_summary(relavant_docs[item][0])['output_text']
+                        keywords = get_keywords_to_optimize_resume(str(relavant_docs[item][0].page_content),st.session_state.job_description)
                         st.write("**Summary** : "+str(summary))
+                        st.write("**Keywords to Include in Your Resume to Optimize and Match Job Description** : "+str(keywords))
+
                 st.success("Hope I help you to find the best resume⏰")
             else:
-                st.write('please click "Help me with the analysis"')                   
+                st.write('please click "Help me with the analysis"')
 #----------------------------------------------------------------------------------------
 def email_tab():
     emails = """
@@ -372,8 +458,40 @@ def email_tab():
 
     st.header("Generate Emails 📧")
 
-    with st.expander(f"**Types of Emails Used in the Job Hunting Process**"):
+    with st.expander(f"💡 **Types of Emails Used in the Job Hunting Process**"):
         st.write(emails)
+    with st.expander(f"💡 **Step-by-Step Guide for Using the Email Generation**"):
+        st.write("""
+
+            1. **Select Email Type:**
+            - Choose the type of email you want to generate from the options provided.
+
+            2. **Enter the Email Details:**
+            - Input the email topic (e.g., Application for Machine Learning Engineer Role at ExampleTech).
+
+            3. **Enter Your Name:**
+            - Enter your name.
+
+            4. **Recipient Information:**
+            - Enter the recipient's name.
+
+            5. **Gather Additional Professional Information:**
+            - Choose one of the following options:
+                - Upload your resume for gathering additional professional information.
+                - Provide your portfolio link for gathering additional professional information.
+                - Write your relevant information.
+                - No mention.
+
+            6. **Enter Signature:**
+            - Input your contact details (job title, company, phone number, etc.).
+
+            7. **Generate:**
+            - Click the Generate button to generate the email.
+
+            8. **Adjust and Regenerate:**
+            - If you are not satisfied with the result, click the Generate button again or tweak the Additional Professional and Email Details a little and try again.
+
+            """)
 
     email_type = st.selectbox("Select Email Type: ", ["Application Email", "Follow-Up Email", "Thank-You Email", "Acceptance Email", "Withdrawal Email", "Update Email", "Cover Letter", "Other"], key="select_email_type")
 
@@ -424,16 +542,43 @@ def email_tab():
         # st.success("Text copied to clipboard!")
             st.write(response.content)
 #----------------------------------------------------------------------------------------
+def realtime_job_market_visualization_tab():
+
+    st.subheader("Understand the real-time job market 📈")
+    with st.expander(f"💡 **Tips**"):
+        st.write("Extract more data to get better results.")
+
+    if 'db' in st.session_state:
+        button=st.button("Generate the insights")
+        if button:
+            path_to_save = "filename.csv"
+            st.session_state.df.to_csv(path_to_save, index=False)
+            # with open(path_to_save, "wb") as f:
+            #     f.write(st.session_state.df.getvalue())
+            
+            try:
+                goals,img,img2=auto_summarizer()
+                st.write(goals[0].question,goals[0].visualization,goals[0].rationale)
+                st.write(img)
+                st.write(goals[1].question,goals[1].visualization,goals[1].rationale)
+                st.write(img2)
+                st.write(chat_with_gemini('What are the key insights in the job market? \n What are the top skills to learn for this particular job role? How can job seekers improve their chances of success in this field?'))
+            except:
+                st.warning('The available dataset is insufficient; it lacks the necessary information to generate insights and visualizations. Please extract more data.')
+    else:
+        st.warning("Please ensure that you have extracted the data at least once before clicking 'Summarize'")
+
+#----------------------------------------------------------------------------------------
 def Additional_features():
     """ Additional features Tab """
     st.title("🔍 Additional Features, Coming Soon...!")
     st.write("""
-    1) Building resumes from raw text or portfolios, that match real-time job requirements.
-    2) interview preparation AI from Resume and real time job requirement for the particular job role 
-    3) AI for preparing learning materials interview preparation
-    4) And many more exciting features to come!
-    
-    Share your thoughts and ideas to integrate, and also, welcome to contributions and debugging!
+        1) Building resumes from raw text or portfolios that match real-time job requirements.
+        2) AI-driven interview preparation using resumes and real-time job requirements for specific job roles.
+        3) AI for preparing learning materials and interview preparation.
+        4) And many more exciting features to come!
+
+        Thank you for visiting! Share your thoughts and ideas to integrate, and also, welcome to contributions and debugging!
     """)
 #----------------------------------------------------------------------------------------
 if __name__ == "__main__":
@@ -441,23 +586,44 @@ if __name__ == "__main__":
 
     feature_tabs = st.sidebar.radio(
         "Features",
-        [":rainbow[**Home**]", "**Data Extraction**", "**AI Conversation**","**Conversation with RAG System**","**ATS System**","**Email Generator**","**Additional features**"],
-        captions=["", "Extract job information as CSV.", "Chat with the AI model to summarize job requirements.","same as AI Conversation but with vector-database","AI tool for efficient and accurate resume screening in ATS","generating various types of emails with different styles"]
+        [
+            ":rainbow[**Home**]",
+            "**Job Data Extraction**",
+            "**General AI Assistant**",
+            "**Specilized AI Assistant**",
+            "**ATS System and Resume Optimization**",
+            "**Email Generator**",
+            "**Job Market Analysis**",
+            "**Additional Features**"
+        ],
+        captions=[
+            "",
+            "Extract job information from websites.",
+            "General AI for job requirements and queries.",
+            "Specialized AI for real-time job market context.",
+            "Generates job descriptions and optimizes resumes.",
+            "Create customized emails.",
+            "Gain insights through trend analysis.",
+            ""
+        ]
+
     )
 
     if feature_tabs == ":rainbow[**Home**]":
         home_tab()
-    elif feature_tabs == "**Data Extraction**":
+    elif feature_tabs == "**Job Data Extraction**":
         extraction_tab()
-    elif feature_tabs == "**AI Conversation**":
+    elif feature_tabs == "**General AI Assistant**":
         chat_tab()
-    elif feature_tabs == "**Conversation with RAG System**":
+    elif feature_tabs == "**Specilized AI Assistant**":
         chat_tab_for_gpt()
-    elif feature_tabs == "**ATS System**":
+    elif feature_tabs == "**ATS System and Resume Optimization**":
         ats_tab()
     elif feature_tabs == "**Email Generator**":
         email_tab()
-    elif feature_tabs == "**Additional features**":
+    elif feature_tabs == "**Job Market Analysis**":
+        realtime_job_market_visualization_tab()
+    elif feature_tabs == "**Additional Features**":
         Additional_features()
 
     st.sidebar.markdown("""

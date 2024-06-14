@@ -116,3 +116,32 @@ def create_job_descriptiion_demo(job_description,search_term):
     )
     response = llm.invoke(prompt.format(search_term=search_term, common_keywords_corpus=common_keywords_corpus))
     return response.content
+
+
+def get_keywords_to_optimize_resume(selected_resume, job_description):
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.1)
+    
+    # Template for building the PROMPT
+    template = """
+        Extract relevant keywords from the job description that are not present in the resume.
+        Provide the keywords in a list format.
+        
+        The keywords should be skill or something related to skill and should not present in provided resume.
+        
+
+        Job Description:
+        {job_description}
+
+        Resume:
+        {selected_resume}
+    """
+    
+    # Creating the final PROMPT
+    prompt = PromptTemplate(
+        input_variables=["job_description", "selected_resume"],
+        template=template,
+    )
+
+    # Generating the response using LLM
+    response = llm.invoke(prompt.format(job_description=job_description, selected_resume=selected_resume))
+    return response.content

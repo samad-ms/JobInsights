@@ -19,7 +19,7 @@ def get_email_Response(email_topic, email_sender, email_recipient,email_type,Sig
     # Template for building the PROMPT
     # Template for building the PROMPT
     template = """
-        Write the entire email in a proper structure(but still concise), including the subject and a formal style, on the topic: {email_topic}. Also, consider including necessary candidate information: {candidate_details_text}, if necessary.
+        Write the entire email in a proper structure(but still concise), including the subject and a formal style, on the topic: {email_topic}. Also, consider including a brief candidate information (candidate information must have less imbact on this email and dont consider projects information from it ): {candidate_details_text}, if necessary.
 
         Type: {email_type}
         Sender: {sender}

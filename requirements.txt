@@ -14,3 +14,10 @@ langchain_pinecone
 python-jobspy
 tiktoken
 google-generativeai
+lida
+lida[transformers]
+torch
+openai
+Tabulate 
+langchain_experimental
+
