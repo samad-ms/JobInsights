@@ -349,7 +349,13 @@ def ats_tab():
         st.session_state.job_description=''
     job_description = ''
     
-    jd_submit = st.button('Collect real-time job description')
+    with st.expander("💡 **Are You Unsure About the Button?**"):
+        st.write(
+        """
+            The "Collect Real-Time Job Description" button quickly retrieves a job description by combining various sources, making it useful for users without a specific description on hand. This generated description contains a wide range of keywords, enhancing the resume's compatibility with different job descriptions and improving its acceptance rate.
+        """)
+
+    jd_submit = st.button('Click here to collect a real-time job description if you do not have one available.')
     
     try:
         if jd_submit:
@@ -358,9 +364,9 @@ def ats_tab():
             else:
                 st.warning('To get real-time job descriptions, extract the data at least once.')
         else:
-            job_description = st.text_area("If you have a job description in your hand, please paste the 'JOB DESCRIPTION' here...", key="1")
+            job_description = st.text_area("Kindly paste the job description here if you have one available..", key="1")
     except Exception as e:
-        st.error(f"To get real-time job descriptions, extract the data at least once. by tryyyyyyyyyyyy",e)
+        st.error(f"To get real-time job descriptions, extract the data at least once.")
 
 
     if job_description != '' and job_description is not None:
