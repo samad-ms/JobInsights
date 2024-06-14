@@ -11,10 +11,15 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.chains import create_history_aware_retriever
 from langchain.prompts import PromptTemplate
-from collections import Counter
+import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from collections import Counter
 import string
+
+
+
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -87,6 +92,8 @@ def create_job_descriptiion_demo(job_description,search_term):
 
 
 def select_frequent_keywords(large_corpus, num_keywords=1000):
+    nltk.download('punkt')
+    nltk.download('stopwords')
     # Tokenize the corpus into words
     tokens = word_tokenize(large_corpus.lower())
 
