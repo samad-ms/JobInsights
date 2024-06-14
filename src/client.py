@@ -355,12 +355,12 @@ def ats_tab():
         if jd_submit:
             if 'db' in st.session_state:
                 job_description= create_job_descriptiion_demo(st.session_state.desc_string,st.session_state.search_term if "search_term" in st.session_state else '')
-            else:
-                st.warning('To get real-time job descriptions, extract the data at least once.')
+            # else:
+            #     st.warning('To get real-time job descriptions, extract the data at least once.')
         else:
             job_description = st.text_area("If you have a job description in your hand, please paste the 'JOB DESCRIPTION' here...", key="1")
     except Exception as e:
-        st.error(f"To get real-time job descriptions, extract the data at least once. by tryyyyyyyyyyyy")
+        st.error(f"To get real-time job descriptions, extract the data at least once. by tryyyyyyyyyyyy",e)
 
 
     if job_description != '' and job_description is not None:
