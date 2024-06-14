@@ -17,6 +17,7 @@ import uuid
 def home_tab():
     """ Home Tab """
     st.title("🔍 Welcome to JobInsights!")
+    st.info("If you wish to navigate to the features, you can directly click on the arrow located in the top-left corner, then select the particular feature you wish to use.")
     st.write("""
         #### What is it?
 
