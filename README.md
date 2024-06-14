@@ -37,7 +37,9 @@
    pip install -r requirements.txt
    ```
 
-2. **Run the Streamlit app**:
+2. **Add environment variable**:
+
+3. **Run the Streamlit app**:
 
    ```bash
    streamlit run src/client.py
