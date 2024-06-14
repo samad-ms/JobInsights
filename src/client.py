@@ -360,7 +360,7 @@ def ats_tab():
         else:
             job_description = st.text_area("If you have a job description in your hand, please paste the 'JOB DESCRIPTION' here...", key="1")
     except Exception as e:
-        st.error(f"To get real-time job descriptions, extract the data at least once.")
+        st.error(f"To get real-time job descriptions, extract the data at least once. by tryyyyyyyyyyyy")
 
 
     if job_description != '' and job_description is not None:
