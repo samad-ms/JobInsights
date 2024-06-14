@@ -348,10 +348,12 @@ def ats_tab():
     if 'job_description' not in st.session_state:
         st.session_state.job_description=''
     job_description = ''
-
+    
+    jd_submit = st.button('Collect real-time job description')
+    
     try:
-        if jd_submit := st.button('Collect real-time job description'):
-            if ("desc_string" in st.session_state) or (st.session_state.desc_string is not None):
+        if jd_submit:
+            if 'db' in st.session_state:
                 job_description= create_job_descriptiion_demo(st.session_state.desc_string,st.session_state.search_term if "search_term" in st.session_state else '')
             else:
                 st.warning('To get real-time job descriptions, extract the data at least once.')
@@ -566,7 +568,7 @@ def realtime_job_market_visualization_tab():
             except:
                 st.warning('The available dataset is insufficient; it lacks the necessary information to generate insights and visualizations. Please extract more data.')
     else:
-        st.warning("Please ensure that you have extracted the data at least once before clicking 'Summarize'")
+        st.warning("Please ensure that you have extracted the data at least once before interacting with this feature")
 
 #----------------------------------------------------------------------------------------
 def Additional_features():
