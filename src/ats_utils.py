@@ -15,6 +15,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from collections import Counter
+# from nltk import pos_tag
 import string
 
 
@@ -84,16 +85,12 @@ def get_summary(current_doc):
 
 #--------------------collect real time jd------------------------------------------
 
-def create_job_descriptiion_demo(job_description,search_term):
-    common_keywords_corpus=select_frequent_keywords(job_description)
-    return common_keywords_corpus
-
-
-
-
 def select_frequent_keywords(large_corpus, num_keywords=1000):
+    #dependencies - lexicons
     nltk.download('punkt')
     nltk.download('stopwords')
+    # nltk.download('averaged_perceptron_tagger')
+    
     # Tokenize the corpus into words
     tokens = word_tokenize(large_corpus.lower())
 
@@ -104,6 +101,12 @@ def select_frequent_keywords(large_corpus, num_keywords=1000):
     stop_words = set(stopwords.words('english'))
     tokens = [word for word in tokens if word not in stop_words]
 
+    # # Tag tokens with part of speech
+    # pos_tags = pos_tag(tokens)
+
+    # # Select only nouns
+    # nouns = [word for word, pos in pos_tags if pos.startswith('NN')]
+
     # Calculate word frequencies
     word_freq = Counter(tokens)
 
@@ -113,22 +116,22 @@ def select_frequent_keywords(large_corpus, num_keywords=1000):
 
     return common_keywords_corpus
 
-# def create_job_descriptiion_demo(job_description,search_term):
-#     common_keywords_corpus=select_frequent_keywords(job_description)
+def create_job_descriptiion_demo(job_description,search_term):
+    common_keywords_corpus=select_frequent_keywords(job_description)
     
-#     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.9)
-#     template = """
-#     Write the entire job description in proper structure for {search_term} role.
-#     by considering the most frequent key words : {common_keywords_corpus}
-#     """
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.9)
+    template = """
+    Write the entire job description in proper structure for {search_term} role.
+    by considering the most frequent key words : {common_keywords_corpus}
+    """
     
-#     # Creating the final PROMPT
-#     prompt = PromptTemplate(
-#         input_variables=["search_term", "common_keywords_corpus"],
-#         template=template,
-#     )
-#     response = llm.invoke(prompt.format(search_term=search_term, common_keywords_corpus=common_keywords_corpus))
-#     return response.content
+    # Creating the final PROMPT
+    prompt = PromptTemplate(
+        input_variables=["search_term", "common_keywords_corpus"],
+        template=template,
+    )
+    response = llm.invoke(prompt.format(search_term=search_term, common_keywords_corpus=common_keywords_corpus))
+    return response.content
 
 
 #--------------------------------------------------------------
