@@ -77,46 +77,53 @@ def get_summary(current_doc):
     summary = chain.invoke([current_doc])
     return summary
 
-#----------------------------summarization----------------------------------
-
-
-def select_frequent_keywords(large_corpus, num_keywords=1000):
-    # Tokenize the corpus into words
-    tokens = word_tokenize(large_corpus.lower())
-
-    # Remove punctuation
-    tokens = [word for word in tokens if word.isalnum()]
-
-    # Remove stop words
-    stop_words = set(stopwords.words('english'))
-    tokens = [word for word in tokens if word not in stop_words]
-
-    # Calculate word frequencies
-    word_freq = Counter(tokens)
-
-    # Select the most frequent keywords
-    most_common_words = word_freq.most_common(num_keywords)
-    common_keywords_corpus = ", ".join([word for word, freq in most_common_words])
-
-    return common_keywords_corpus
+#--------------------collect real time jd------------------------------------------
 
 def create_job_descriptiion_demo(job_description,search_term):
-    common_keywords_corpus=select_frequent_keywords(job_description)
-    
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.9)
-    template = """
-    Write the entire job description in proper structure for {search_term} role.
-    by considering the most frequent key words : {common_keywords_corpus}
-    """
-    
-    # Creating the final PROMPT
-    prompt = PromptTemplate(
-        input_variables=["search_term", "common_keywords_corpus"],
-        template=template,
-    )
-    response = llm.invoke(prompt.format(search_term=search_term, common_keywords_corpus=common_keywords_corpus))
-    return response.content
+    return "demo"
 
+
+
+
+# def select_frequent_keywords(large_corpus, num_keywords=1000):
+#     # Tokenize the corpus into words
+#     tokens = word_tokenize(large_corpus.lower())
+
+#     # Remove punctuation
+#     tokens = [word for word in tokens if word.isalnum()]
+
+#     # Remove stop words
+#     stop_words = set(stopwords.words('english'))
+#     tokens = [word for word in tokens if word not in stop_words]
+
+#     # Calculate word frequencies
+#     word_freq = Counter(tokens)
+
+#     # Select the most frequent keywords
+#     most_common_words = word_freq.most_common(num_keywords)
+#     common_keywords_corpus = ", ".join([word for word, freq in most_common_words])
+
+#     return common_keywords_corpus
+
+# def create_job_descriptiion_demo(job_description,search_term):
+#     common_keywords_corpus=select_frequent_keywords(job_description)
+    
+#     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.9)
+#     template = """
+#     Write the entire job description in proper structure for {search_term} role.
+#     by considering the most frequent key words : {common_keywords_corpus}
+#     """
+    
+#     # Creating the final PROMPT
+#     prompt = PromptTemplate(
+#         input_variables=["search_term", "common_keywords_corpus"],
+#         template=template,
+#     )
+#     response = llm.invoke(prompt.format(search_term=search_term, common_keywords_corpus=common_keywords_corpus))
+#     return response.content
+
+
+#--------------------------------------------------------------
 
 def get_keywords_to_optimize_resume(selected_resume, job_description):
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.1)
