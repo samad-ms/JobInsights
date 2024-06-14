@@ -15,7 +15,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from collections import Counter
-# from nltk import pos_tag
+from nltk import pos_tag
 import string
 
 
@@ -89,7 +89,7 @@ def select_frequent_keywords(large_corpus, num_keywords=1000):
     #dependencies - lexicons
     nltk.download('punkt')
     nltk.download('stopwords')
-    # nltk.download('averaged_perceptron_tagger')
+    nltk.download('averaged_perceptron_tagger')
     
     # Tokenize the corpus into words
     tokens = word_tokenize(large_corpus.lower())
@@ -102,13 +102,13 @@ def select_frequent_keywords(large_corpus, num_keywords=1000):
     tokens = [word for word in tokens if word not in stop_words]
 
     # # Tag tokens with part of speech
-    # pos_tags = pos_tag(tokens)
+    pos_tags = pos_tag(tokens)
 
     # # Select only nouns
-    # nouns = [word for word, pos in pos_tags if pos.startswith('NN')]
+    nouns = [word for word, pos in pos_tags if pos.startswith('NN')]
 
     # Calculate word frequencies
-    word_freq = Counter(tokens)
+    word_freq = Counter(nouns)
 
     # Select the most frequent keywords
     most_common_words = word_freq.most_common(num_keywords)
