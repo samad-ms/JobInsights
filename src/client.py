@@ -2,7 +2,7 @@ import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
 from generate_df import generate_dataframe
 from response_generator import model
-from preprocess import find_valid_description
+from preprocess import *
 from download_csv import get_table_download_link
 from response_generator import set_initial_message
 from response_generator import chat_with_gemini
@@ -154,6 +154,8 @@ def extraction_tab():
     # Check if 'desc_string' is not in session_state, initialize it
     if 'desc_string' not in st.session_state:
         st.session_state.desc_string = ""
+    if 'desc_string' not in st.session_state:
+        st.session_state.desc_string = ""
 
     st.session_state.search_term = search_term
 
@@ -181,6 +183,16 @@ def extraction_tab():
                 st.write("Validating Descriptions ...")
                 desc_string = find_valid_description(df, total_desc_count, model)
                 # st.write(desc_string)#---------------------------------------
+                desc_string_rag,relevant_indices=remove_unnecessary_info_from_job_description(st.session_state.search_term,st.session_state.df)
+                # st.write(desc_string_rag)#---------------------------------------
+
+                if desc_string_rag:
+                    st.session_state.desc_string_rag = desc_string_rag
+                    if len(relevant_indices)<=2:
+                        st.info("Insufficient job descriptions may lead to incomplete analyses and limit the depth of insights gained.")
+                else:
+                    st.error("No valid description found.")            
+
                 if desc_string:
                     st.session_state.desc_string = desc_string
                 else:
@@ -195,8 +207,8 @@ def extraction_tab():
             try:
                 # st.write(st.session_state.desc_string)#--------------------------
                 set_initial_message(st.session_state.desc_string) #context set for gemini
-                db=jd_to_vectorestore(st.session_state.desc_string)  #context set for gpt-rag
-                # st.write(db)#------------------------------------------------------
+                db=jd_to_vectorestore(st.session_state.desc_string_rag)  #context set for gpt-rag
+
                 if 'db' not in st.session_state:
                     st.session_state.db = db
                 st.success("Descriptions Set Successfully!")

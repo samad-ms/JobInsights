@@ -20,4 +20,5 @@ torch
 openai
 Tabulate 
 langchain_experimental
+python-Levenshtein
 
