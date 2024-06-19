@@ -11,7 +11,8 @@ from ats_utils import *
 from email_utils import *
 from visualization_utils import *
 import uuid
-
+from dotenv import load_dotenv
+load_dotenv()
 
 #----------------------------------------------------------------------------------------
 def home_tab():
@@ -598,7 +599,7 @@ if __name__ == "__main__":
         [
             ":rainbow[**Home**]",
             "**Job Data Extraction**",
-            "**General AI Assistant**",
+            # "**General AI Assistant**",
             "**Specilized AI Assistant**",
             "**ATS System and Resume Optimization**",
             "**Email Generator**",
@@ -608,8 +609,8 @@ if __name__ == "__main__":
         captions=[
             "",
             "Extract job information from websites.",
-            "General AI for job requirements and queries.",
-            "Specialized AI for real-time job market context.",
+            # "General AI for job requirements and queries.",
+            "Specialized AI with real-time job market as context.",
             "Generates job descriptions and optimizes resumes.",
             "Create customized emails.",
             "Gain insights through trend analysis.",
@@ -622,8 +623,8 @@ if __name__ == "__main__":
         home_tab()
     elif feature_tabs == "**Job Data Extraction**":
         extraction_tab()
-    elif feature_tabs == "**General AI Assistant**":
-        chat_tab()
+    # elif feature_tabs == "**General AI Assistant**":
+    #     chat_tab()
     elif feature_tabs == "**Specilized AI Assistant**":
         chat_tab_for_gpt()
     elif feature_tabs == "**ATS System and Resume Optimization**":
