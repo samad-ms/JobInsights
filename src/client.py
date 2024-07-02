@@ -181,7 +181,7 @@ def extraction_tab():
                 total_desc_count = 30
                 desc_string = ""
                 st.write("Validating Descriptions ...")
-                desc_string = find_valid_description(df, total_desc_count, model)
+                # desc_string = find_valid_description(df, total_desc_count, model)
                 # st.write(desc_string)#---------------------------------------
                 desc_string_rag,relevant_indices=remove_unnecessary_info_from_job_description(st.session_state.search_term,st.session_state.df)
                 # st.write(desc_string_rag)#---------------------------------------
@@ -193,10 +193,10 @@ def extraction_tab():
                 else:
                     st.error("No valid description found.")            
 
-                if desc_string:
-                    st.session_state.desc_string = desc_string
-                else:
-                    st.error("No valid description found.")            
+                # if desc_string:
+                #     st.session_state.desc_string = desc_string
+                # else:
+                #     st.error("No valid description found.")            
                 st.success("Data Extraction Complete!")
             except Exception as e:
                 st.error(f"Sorry, there is a problem: {e}")
@@ -206,7 +206,7 @@ def extraction_tab():
             st.write("Setting Descriptions ... This will take a few moments.")
             try:
                 # st.write(st.session_state.desc_string)#--------------------------
-                set_initial_message(st.session_state.desc_string) #context set for gemini
+                # set_initial_message(st.session_state.desc_string) #context set for gemini
                 db=jd_to_vectorestore(st.session_state.desc_string_rag)  #context set for gpt-rag
 
                 if 'db' not in st.session_state:
@@ -515,7 +515,7 @@ def email_tab():
 
             """)
 
-    email_type = st.selectbox("Select Email Type: ", ["Application Email", "Follow-Up Email", "Thank-You Email", "Acceptance Email", "Withdrawal Email", "Update Email", "Cover Letter", "Other"], key="select_email_type")
+    # email_type = st.selectbox("Select Email Type: ", ["Application Email", "Follow-Up Email", "Thank-You Email", "Acceptance Email", "Withdrawal Email", "Update Email", "Cover Letter", "Other"], key="select_email_type")
 
     form_input = st.text_area('Enter the email topic',placeholder='Application for Machine Learning Engineer Role at ExampleTech',height=200)
     # Creating columns for the UI - To receive inputs from user
@@ -528,7 +528,7 @@ def email_tab():
 
     candidate_details_text=""
     
-    candidate_details_fetch_from = st.selectbox("Gather additional professional information from:", ["Resume", "Portfolio website","Write","Not mentioned"], key="candidate_details")
+    candidate_details_fetch_from = st.selectbox("Gather additional professional information about you from:", ["Resume", "Portfolio website","Write","Not mentioned"], key="candidate_details")
     if candidate_details_fetch_from=='Resume':
         resume_pdf = st.file_uploader("Upload resumes here, only PDF files allowed", type=["pdf"],accept_multiple_files=True)
         # st.session_state['unique_id']=uuid.uuid4().hex
@@ -549,6 +549,26 @@ def email_tab():
         with st.expander("**confirm candidate details**"):
             st.write(st.session_state.candidate_details_text)
 
+
+    company_details_text=''
+    company_details_fetch_from = st.selectbox("Gather additional information about the company from:", ["website","Write","Not mentioned"], key="company_details")
+    if company_details_fetch_from=='website':
+        if website_url := st.text_input("provide the URL for the 'About Us' page on your company's website."):
+            company_details_text=get_company_details(website_url=website_url)
+    elif company_details_fetch_from=="Write":
+        company_details_text = st.text_area('Company Details', placeholder="Ex: Established in 2010, AlphaTech is a renowned leader in AI and machine learning solutions, headquartered in City X. Our team of 200+ experts specializes in developing cutting-edge applications for data analytics, natural language processing (NLP), and computer vision. AlphaTech's innovative products have been featured in industry publications and recognized for their impact on optimizing business processes and customer engagement.")
+    else:
+        company_details_text=""
+
+    if company_details_text:
+        if ("company_details_text" not in st.session_state) or company_details_text:
+            st.session_state.company_details_text = company_details_text
+        with st.expander("**Confirm Company Details**"):
+            st.write(st.session_state.company_details_text)
+
+
+
+
     Signature = st.text_area('Signature: your contact details (job title, company, phone number, etc.)',
                             placeholder="""Abdul Samad \nMachine Learning Engineer \nExampleTech \nsamad.example@gmail.com \n+91-1234567890 \n """
                             ,height=100)
@@ -559,7 +579,7 @@ def email_tab():
     response=None
     if submit:
         with st.spinner("Thinking ... "):
-            response=get_email_Response(form_input, email_sender, email_recipient,email_type,Signature,candidate_details_text=candidate_details_text)
+            response=get_email_Response(form_input, email_sender, email_recipient,Signature,candidate_details_text=candidate_details_text,company_details_text=company_details_text)
         # clipboard.copy(f"{response.content}")
         # st.success("Text copied to clipboard!")
             st.write(response.content)
@@ -578,13 +598,16 @@ def realtime_job_market_visualization_tab():
             # with open(path_to_save, "wb") as f:
             #     f.write(st.session_state.df.getvalue())
             
+
+            # st.write(auto_summarizer())
             try:
-                goals,img,img2=auto_summarizer()
-                st.write(goals[0].question,goals[0].visualization,goals[0].rationale)
-                st.write(img)
-                st.write(goals[1].question,goals[1].visualization,goals[1].rationale)
-                st.write(img2)
-                st.write(chat_with_gemini('What are the key insights in the job market? \n What are the top skills to learn for this particular job role? How can job seekers improve their chances of success in this field?'))
+                goals_and_imgs=auto_summarizer()
+                for item in goals_and_imgs:
+                    st.write(item[0])
+                    st.write(item[1])
+                    st.write(item[2])
+                    st.image(item[3])
+                # st.write(chat_with_gemini('What are the key insights in the job market? \n What are the top skills to learn for this particular job role? How can job seekers improve their chances of success in this field?'))
             except:
                 st.warning('The available dataset is insufficient; it lacks the necessary information to generate insights and visualizations. Please extract more data.')
     else:

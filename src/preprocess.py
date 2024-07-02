@@ -48,7 +48,7 @@ def remove_unnecessary_info_from_job_description(search_term, df):
     similarity_scores.sort(key=lambda x: x[1])
 
     # Filter job titles with high similarity
-    relevant_indices = [i for i, (title, score) in enumerate(similarity_scores) if score <= 10]  # Adjust the threshold as needed
+    relevant_indices = [i for i, (title, score) in enumerate(similarity_scores) if score <= 20]  # Adjust the threshold as needed
 
     if len(relevant_indices) == 0:
         # Choose top 2 job titles if no similar titles found
