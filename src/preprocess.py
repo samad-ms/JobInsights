@@ -37,7 +37,12 @@ def extract_integer_from_string(input_string):
     else:
         return None  # Return None if no integer is found in the string
     
-
+def format_job_descriptions(df):
+    formatted_output = ""
+    for idx, row in df.iterrows():
+        formatted_output += f"{idx + 1}. {row['title']}: {row['description']}\n"
+    
+    return formatted_output
 
 
 def remove_unnecessary_info_from_job_description(search_term, df):

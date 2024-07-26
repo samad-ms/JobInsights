@@ -186,12 +186,13 @@ def extraction_tab():
                 desc_string_rag=''
                 if 'desc_string_rag' not in st.session_state:
                     st.session_state.desc_string_rag = ""
-                desc_string_rag,relevant_indices=remove_unnecessary_info_from_job_description(st.session_state.search_term,st.session_state.df)
+                # desc_string_rag,relevant_indices=remove_unnecessary_info_from_job_description(st.session_state.search_term,st.session_state.df)
+                desc_string_rag=format_job_descriptions(st.session_state.df)
                 # st.write(desc_string_rag)#---------------------------------------
                 if desc_string_rag:
                     st.session_state.desc_string_rag = desc_string_rag
-                    if len(relevant_indices)<=2:
-                        st.info("Insufficient job descriptions may lead to incomplete analyses and limit the depth of insights gained.")
+                    # if len(relevant_indices)<=2:
+                    #     st.info("Insufficient job descriptions may lead to incomplete analyses and limit the depth of insights gained.")
                 else:
                     st.error("No valid description found.")            
 
