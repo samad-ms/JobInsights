@@ -1,8 +1,8 @@
 import re
 import pandas as pd
-from Levenshtein import distance as levenshtein_distance
-# from sklearn.feature_extraction.text import TfidfVectorizer
-# from sklearn.metrics.pairwise import cosine_similarity
+# from Levenshtein import distance as levenshtein_distance
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 def find_valid_description(df, total_desc_count, model):
@@ -41,20 +41,26 @@ def extract_integer_from_string(input_string):
 
 
 def remove_unnecessary_info_from_job_description(search_term, df):
-    # Calculate Levenshtein distance between search term and job titles
-    similarity_scores = [(idx, levenshtein_distance(search_term, title)) for idx, title in enumerate(df['title'])]
-
-    # Sort job titles by similarity scores (lower distance means more similar)
-    similarity_scores.sort(key=lambda x: x[1])
-
-    # Filter job titles with high similarity
-    relevant_indices = [idx for idx, score in similarity_scores if score <= 20]  # Adjust the threshold as needed
-
+    # Combine search term with job titles for TF-IDF vectorization
+    titles = df['title'].tolist()
+    titles.append(search_term)
+    
+    # Vectorize the titles using TF-IDF
+    vectorizer = TfidfVectorizer().fit_transform(titles)
+    
+    # Calculate cosine similarity between search term and job titles
+    cosine_similarities = cosine_similarity(vectorizer[-1], vectorizer[:-1]).flatten()
+    
+    # Get the indices of the most similar job titles
+    similar_indices = cosine_similarities.argsort()[::-1]  # Sort in descending order of similarity
+    
+    # Filter job titles with high similarity (adjust the threshold as needed)
+    relevant_indices = [idx for idx in similar_indices if cosine_similarities[idx] > 0.2]
+    
     if len(relevant_indices) == 0:
         # Choose top 2 job titles if no similar titles found
-        top_indices = [idx for idx, _ in similarity_scores[:2]]
-        relevant_indices = top_indices
-
+        relevant_indices = similar_indices[:2].tolist()
+    
     # Combine the descriptions of the relevant job titles
     formatted_output = ""
     for idx in relevant_indices:
@@ -62,7 +68,6 @@ def remove_unnecessary_info_from_job_description(search_term, df):
         formatted_output += f"{idx+1}. {row['title']} {row['description']}\n"
 
     return formatted_output, relevant_indices
-
 
     
 # def remove_unnecessary_info_from_job_description(search_term, df):
