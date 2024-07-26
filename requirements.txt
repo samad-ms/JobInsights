@@ -20,5 +20,7 @@ torch
 openai
 Tabulate 
 langchain_experimental
-python-Levenshtein
+# python-Levenshtein
+scikit-learn
+
 
