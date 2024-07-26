@@ -1,6 +1,6 @@
 import re
 import pandas as pd
-import Levenshtein
+from Levenshtein import distance as levenshtein_distance
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # from sklearn.metrics.pairwise import cosine_similarity
 
@@ -42,21 +42,18 @@ def extract_integer_from_string(input_string):
 
 def remove_unnecessary_info_from_job_description(search_term, df):
     # Calculate Levenshtein distance between search term and job titles
-    similarity_scores = [(title, Levenshtein.distance(search_term, title)) for title in df['title']]
+    similarity_scores = [(idx, levenshtein_distance(search_term, title)) for idx, title in enumerate(df['title'])]
 
     # Sort job titles by similarity scores (lower distance means more similar)
     similarity_scores.sort(key=lambda x: x[1])
 
     # Filter job titles with high similarity
-    relevant_indices = [i for i, (title, score) in enumerate(similarity_scores) if score <= 20]  # Adjust the threshold as needed
+    relevant_indices = [idx for idx, score in similarity_scores if score <= 20]  # Adjust the threshold as needed
 
     if len(relevant_indices) == 0:
         # Choose top 2 job titles if no similar titles found
-        top_indices = [i for i, _ in similarity_scores[:2]]
+        top_indices = [idx for idx, _ in similarity_scores[:2]]
         relevant_indices = top_indices
-
-    # Ensure relevant_indices contains integer values
-    relevant_indices = [int(i) for i in relevant_indices]
 
     # Combine the descriptions of the relevant job titles
     formatted_output = ""
@@ -64,7 +61,7 @@ def remove_unnecessary_info_from_job_description(search_term, df):
         row = df.iloc[idx]
         formatted_output += f"{idx+1}. {row['title']} {row['description']}\n"
 
-    return formatted_output,relevant_indices
+    return formatted_output, relevant_indices
 
 
     
