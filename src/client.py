@@ -178,6 +178,8 @@ def extraction_tab():
                 total_desc_count = 30
                 desc_string = ""
                 st.write("Validating Descriptions ...")
+                if desc_string:
+                    st.session_state.desc_string = desc_string
                 desc_string = find_valid_description(df, total_desc_count, model)
                 # st.write(desc_string)#---------------------------------------
                 if desc_string:
@@ -193,7 +195,7 @@ def extraction_tab():
             st.write("Setting Descriptions ... This will take a few moments.")
             try:
                 # st.write(st.session_state.desc_string)#--------------------------
-                set_initial_message(st.session_state.desc_string) #context set for gemini
+                # set_initial_message(st.session_state.desc_string) #context set for gemini
                 db=jd_to_vectorestore(st.session_state.desc_string)  #context set for gpt-rag
                 # st.write(db)#------------------------------------------------------
                 if 'db' not in st.session_state:
