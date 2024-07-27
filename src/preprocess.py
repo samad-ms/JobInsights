@@ -75,39 +75,4 @@ def remove_unnecessary_info_from_job_description(search_term, df):
     return formatted_output, relevant_indices
 
     
-# def remove_unnecessary_info_from_job_description(search_term, df):
-#     """
-#     Filters job descriptions based on the similarity between the search term and job titles using cosine similarity
-#     and returns a combined string of relevant job descriptions with a separator.
-
-#     Parameters:
-#     search_term (str): The search term to compare with job titles.
-#     df (pd.DataFrame): DataFrame containing 'title' and 'desc_string' columns.
-
-#     Returns:
-#     str: Combined string of job descriptions having high similarity with the search term, separated by a line.
-#     """
-
-#     # Calculate TF-IDF vectors for search term and job titles
-#     tfidf_vectorizer = TfidfVectorizer()
-#     tfidf_matrix = tfidf_vectorizer.fit_transform([search_term] + df['title'].tolist())
-
-#     # Calculate cosine similarity between search term and job titles
-#     similarity_scores = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix)[0]
-
-#     # Sort job titles by cosine similarity scores (higher score means more similar)
-#     similarity_scores_with_indices = list(enumerate(similarity_scores))[1:]  # Exclude similarity with itself
-#     similarity_scores_with_indices.sort(key=lambda x: x[1], reverse=True)
-
-#     # Filter job titles with high similarity
-#     relevant_indices = [i for i, _ in similarity_scores_with_indices if _ >= 0.5]  # Adjust the threshold as needed
-
-#     # Combine the descriptions of the relevant job titles
-#     formatted_output = ""
-#     for idx in relevant_indices:
-#         row = df.iloc[idx]
-#         formatted_output += f"{idx+1}. {row['title']} {row['description']}\n"
-#         formatted_output += "----------\n"  # Separator
-
-#     return formatted_output
 
