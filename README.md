@@ -10,7 +10,6 @@
 
 ## Application | Report | Source Code
 
-- **Application:** [JobInsights](https://job-insights.streamlit.app/)
 - **Report:** [Project Report](https://abduls-organization-13.gitbook.io/abduls-portfolio/projects/job-insights)
 
 ## Description
