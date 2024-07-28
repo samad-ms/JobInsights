@@ -8,7 +8,7 @@
 ![RAG](https://img.shields.io/badge/RAG-Icon-green)
 ![LIDA](https://img.shields.io/badge/LIDA-Icon-green)
 
-## Application | Report | Source Code
+## Report 
 
 - **Report:** [Project Report](https://abduls-organization-13.gitbook.io/abduls-portfolio/projects/job-insights)
 
